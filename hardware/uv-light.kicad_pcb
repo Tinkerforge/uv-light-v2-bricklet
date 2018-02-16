@@ -3,7 +3,7 @@
   (general
     (links 52)
     (no_connects 0)
-    (area 129.209499 75.209499 144.590501 100.590501)
+    (area 13.796426 74.544999 145.255001 194.575)
     (thickness 1.6)
     (drawings 11)
     (tracks 201)
@@ -14,9 +14,9 @@
 
   (page A4)
   (title_block
-    (title "UV Light Bricklet 2.0")
+    (title "UV Light Bricklet")
     (date 2018-02-16)
-    (rev 1.0)
+    (rev 2.0)
     (company Tinkerforge)
     (comment 1 "Licensed under CERN OHL v.1.1")
     (comment 2 "Copyright (©) 2018, L.Lauer <lukas@tinkerforge.com>")

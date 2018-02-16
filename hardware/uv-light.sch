@@ -29,14 +29,15 @@ LIBS:opto
 LIBS:atmel
 LIBS:contrib
 LIBS:valves
+LIBS:uv-light-cache
 EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 1
-Title "UV Light Bricklet 2.0"
+Title "UV Light Bricklet"
 Date "2018-02-16"
-Rev "1.0"
+Rev "2.0"
 Comp "Tinkerforge GmbH"
 Comment1 "Licensed under CERN OHL v.1.1"
 Comment2 "Copyright (©) 2018, L.Lauer <lukas@tinkerforge.com>"
