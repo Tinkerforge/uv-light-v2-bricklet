@@ -3,9 +3,9 @@
   (general
     (links 52)
     (no_connects 0)
-    (area 13.796426 74.544999 145.255001 194.575)
+    (area 129.209499 75.209499 144.590501 100.590501)
     (thickness 1.6)
-    (drawings 11)
+    (drawings 12)
     (tracks 201)
     (zones 0)
     (modules 27)
@@ -6698,6 +6698,9 @@
       (xy 2.48217 3.513666) (xy 2.482863 3.409859) (xy 2.482863 3.409859)) (layer B.SilkS) (width 0.1))
   )
 
+  (gr_text tinkerforge.com (at 141.72 87.9 270) (layer B.SilkS)
+    (effects (font (size 0.7 0.7) (thickness 0.15)) (justify mirror))
+  )
   (gr_text Status (at 136.9 76.4) (layer F.SilkS)
     (effects (font (size 0.7 0.7) (thickness 0.15)))
   )
