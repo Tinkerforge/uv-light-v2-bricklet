@@ -22,6 +22,29 @@
 #ifndef CONFIG_VEML6075_H
 #define CONFIG_VEML6075_H
 
+#include "xmc_gpio.h"
+#include "xmc_i2c.h"
 
+#define VEML6075_I2C_BAUDRATE         100000
+
+#define VEML6075_I2C_ADDRESS          0x10
+
+#define VEML6075_I2C                  XMC_I2C0_CH1
+
+#define VEML6075_SCL_PORT             XMC_GPIO_PORT0
+#define VEML6075_SCL_PIN              8
+#define VEML6075_SCL_PIN_MODE         XMC_GPIO_MODE_OUTPUT_OPEN_DRAIN_ALT7
+#define VEML6075_SCL_INPUT            XMC_USIC_CH_INPUT_DX1
+#define VEML6075_SCL_SOURCE           1
+#define VEML6075_SCL_FIFO_SIZE        XMC_USIC_CH_FIFO_SIZE_16WORDS
+#define VEML6075_SCL_FIFO_POINTER     32
+
+#define VEML6075_SDA_PORT             XMC_GPIO_PORT0
+#define VEML6075_SDA_PIN              6
+#define VEML6075_SDA_PIN_MODE         XMC_GPIO_MODE_OUTPUT_OPEN_DRAIN_ALT7
+#define VEML6075_SDA_INPUT            XMC_USIC_CH_INPUT_DX0
+#define VEML6075_SDA_SOURCE           2
+#define VEML6075_SDA_FIFO_SIZE        XMC_USIC_CH_FIFO_SIZE_16WORDS
+#define VEML6075_SDA_FIFO_POINTER     48
 
 #endif

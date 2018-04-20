@@ -28,6 +28,8 @@
 #include "bricklib2/protocols/tfp/tfp.h"
 #include "bricklib2/bootloader/bootloader.h"
 
+#define CALLBACK_VALUE_TYPE CALLBACK_VALUE_TYPE_UINT32
+
 // Default functions
 BootloaderHandleMessageResponse handle_message(const void *data, void *response);
 void communication_tick(void);
@@ -59,24 +61,26 @@ void communication_init(void);
 #define UV_LIGHT_V2_STATUS_LED_CONFIG_SHOW_STATUS 3
 
 // Function and callback IDs and structs
-#define FID_GET_UV_LIGHT 1
-#define FID_SET_UV_LIGHT_CALLBACK_CONFIGURATION 2
-#define FID_GET_UV_LIGHT_CALLBACK_CONFIGURATION 3
+#define FID_GET_UV_TYPE_A 1
+#define FID_SET_UV_TYPE_A_CALLBACK_CONFIGURATION 2
+#define FID_GET_UV_TYPE_A_CALLBACK_CONFIGURATION 3
+#define FID_GET_UV_TYPE_B 5
+#define FID_SET_UV_TYPE_B_CALLBACK_CONFIGURATION 6
+#define FID_GET_UV_TYPE_B_CALLBACK_CONFIGURATION 7
 
-#define FID_CALLBACK_UV_LIGHT 4
-
-
+#define FID_CALLBACK_UV_TYPE_A 4
+#define FID_CALLBACK_UV_TYPE_B 8
 
 // Function prototypes
 
-
 // Callbacks
-bool handle_uv_light_callback(void);
+bool handle_uv_type_a_callback(void);
+bool handle_uv_type_b_callback(void);
 
 #define COMMUNICATION_CALLBACK_TICK_WAIT_MS 1
-#define COMMUNICATION_CALLBACK_HANDLER_NUM 1
+#define COMMUNICATION_CALLBACK_HANDLER_NUM 2
 #define COMMUNICATION_CALLBACK_LIST_INIT \
-	handle_uv_light_callback, \
-
+	handle_uv_type_a_callback, \
+	handle_uv_type_b_callback, \
 
 #endif
