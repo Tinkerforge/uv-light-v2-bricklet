@@ -35,10 +35,10 @@ void veml6075_init(void) {
 
 	veml6075.uv_comp1_raw = 0;
 	veml6075.uv_comp2_raw = 0;
-	veml6075.uv_type_a_raw = 0;
-	veml6075.uv_type_b_raw = 0;
-	veml6075.uv_type_a_calc = 0;
-	veml6075.uv_type_b_calc = 0;
+	veml6075.uva_light_raw = 0;
+	veml6075.uvb_light_raw = 0;
+	veml6075.uva_light_calc = 0;
+	veml6075.uvb_light_calc = 0;
 
 	veml6075.i2c_fifo.baudrate = VEML6075_I2C_BAUDRATE;
 	veml6075.i2c_fifo.i2c = VEML6075_I2C;
@@ -149,7 +149,7 @@ void veml6075_tick(void) {
 		fifo_v = (uint32_t)((veml6075.i2c_fifo_buf[1] << 8) | veml6075.i2c_fifo_buf[0]);
 
 		if(veml6075.sm == S_GET_UV_TYPE_A) {
-			veml6075.uv_type_a_raw = fifo_v;
+			veml6075.uva_light_raw = fifo_v;
 			veml6075.sm = S_GET_UV_TYPE_B;
 
 			// Drain FIFO
@@ -158,7 +158,7 @@ void veml6075_tick(void) {
 			i2c_fifo_read_register(&veml6075.i2c_fifo, (uint8_t)VEML6075_ADDR_UVB_DATA, 2);
 		}
 		else if(veml6075.sm == S_GET_UV_TYPE_B) {
-			veml6075.uv_type_b_raw = fifo_v;
+			veml6075.uvb_light_raw = fifo_v;
 			veml6075.sm = S_GET_UV_COMP_1;
 
 			// Drain FIFO
@@ -179,18 +179,18 @@ void veml6075_tick(void) {
 			veml6075.uv_comp2_raw = fifo_v;
 
 			// Calculate coefficients. Check page 10 of the application note
-			a = veml6075.uv_type_a_raw / veml6075.uv_comp1_raw;
-			c = veml6075.uv_type_b_raw / veml6075.uv_comp1_raw;
-			b = (veml6075.uv_type_a_raw - (a * veml6075.uv_comp1_raw)) / veml6075.uv_comp2_raw;
-			d = (veml6075.uv_type_b_raw - (c * veml6075.uv_comp1_raw)) / veml6075.uv_comp2_raw;
+			a = veml6075.uva_light_raw / veml6075.uv_comp1_raw;
+			c = veml6075.uvb_light_raw / veml6075.uv_comp1_raw;
+			b = (veml6075.uva_light_raw - (a * veml6075.uv_comp1_raw)) / veml6075.uv_comp2_raw;
+			d = (veml6075.uvb_light_raw - (c * veml6075.uv_comp1_raw)) / veml6075.uv_comp2_raw;
 
-			// Calculate compensated UV type A and B raw values. Check Eq. (1) and Eq. (2) on page 6 of the application note
-			veml6075.uv_type_a_raw = veml6075.uv_type_a_raw - (a * veml6075.uv_comp1_raw) - (b * veml6075.uv_comp2_raw);
-			veml6075.uv_type_b_raw = veml6075.uv_type_b_raw - (c * veml6075.uv_comp1_raw) - (d * veml6075.uv_comp2_raw);
+			// Calculate compensated UVA and UVB light raw values. Check Eq. (1) and Eq. (2) on page 6 of the application note
+			veml6075.uva_light_raw = veml6075.uva_light_raw - (a * veml6075.uv_comp1_raw) - (b * veml6075.uv_comp2_raw);
+			veml6075.uvb_light_raw = veml6075.uvb_light_raw - (c * veml6075.uv_comp1_raw) - (d * veml6075.uv_comp2_raw);
 
 			// Convert raw values to µW/cm² (for integration time of 100ms). Check the table on page 2
-			veml6075.uv_type_a_calc = veml6075.uv_type_a_raw / 2;
-			veml6075.uv_type_b_calc = veml6075.uv_type_b_raw / 4;
+			veml6075.uva_light_calc = veml6075.uva_light_raw / 2;
+			veml6075.uvb_light_calc = veml6075.uvb_light_raw / 4;
 
 			veml6075.sm = S_GET_UV_TYPE_A;
 			veml6075.i2c_fifo.state = I2C_FIFO_STATE_IDLE;
@@ -198,10 +198,10 @@ void veml6075_tick(void) {
 	}
 }
 
-uint32_t veml6075_get_uv_type_a(void) {
-	return veml6075.uv_type_a_calc;
+uint32_t veml6075_get_uva_light(void) {
+	return veml6075.uva_light_calc;
 }
 
-uint32_t veml6075_get_uv_type_b(void) {
-	return veml6075.uv_type_b_calc;
+uint32_t veml6075_get_uvb_light(void) {
+	return veml6075.uvb_light_calc;
 }

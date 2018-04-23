@@ -64,10 +64,10 @@ typedef struct {
 
 	uint32_t uv_comp1_raw;
 	uint32_t uv_comp2_raw;
-	uint32_t uv_type_a_raw;
-	uint32_t uv_type_b_raw;
-	uint32_t uv_type_a_calc;
-	uint32_t uv_type_b_calc;
+	uint32_t uva_light_raw;
+	uint32_t uvb_light_raw;
+	uint32_t uva_light_calc;
+	uint32_t uvb_light_calc;
 
 	uint8_t i2c_fifo_buf[16];
 
@@ -80,7 +80,7 @@ extern VEML6075_t veml6075;
 void veml6075_init(void);
 void veml6075_tick(void);
 
-uint32_t veml6075_get_uv_type_a(void);
-uint32_t veml6075_get_uv_type_b(void);
+uint32_t veml6075_get_uva_light(void);
+uint32_t veml6075_get_uvb_light(void);
 
 #endif

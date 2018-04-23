@@ -27,27 +27,27 @@
 
 #include "veml6075.h"
 
-CallbackValue callback_value_uv_type_a;
-CallbackValue callback_value_uv_type_b;
+CallbackValue callback_value_uvb_light;
+CallbackValue callback_value_uva_light;
 
 BootloaderHandleMessageResponse handle_message(const void *message, void *response) {
 	switch(tfp_get_fid_from_message(message)) {
-		case FID_GET_UV_TYPE_A: return get_callback_value(message, response, &callback_value_uv_type_a);
-		case FID_SET_UV_TYPE_A_CALLBACK_CONFIGURATION: return set_callback_value_callback_configuration(message, &callback_value_uv_type_a);
-		case FID_GET_UV_TYPE_A_CALLBACK_CONFIGURATION: return get_callback_value_callback_configuration(message, response, &callback_value_uv_type_a);
-		case FID_GET_UV_TYPE_B: return get_callback_value(message, response, &callback_value_uv_type_b);
-		case FID_SET_UV_TYPE_B_CALLBACK_CONFIGURATION: return set_callback_value_callback_configuration(message, &callback_value_uv_type_b);
-		case FID_GET_UV_TYPE_B_CALLBACK_CONFIGURATION: return get_callback_value_callback_configuration(message, response, &callback_value_uv_type_b);
+		case FID_GET_UVA_LIGHT: return get_callback_value(message, response, &callback_value_uva_light);
+		case FID_SET_UVA_LIGHT_CALLBACK_CONFIGURATION: return set_callback_value_callback_configuration(message, &callback_value_uva_light);
+		case FID_GET_UVA_LIGHT_CALLBACK_CONFIGURATION: return get_callback_value_callback_configuration(message, response, &callback_value_uva_light);
+		case FID_GET_UVB_LIGHT: return get_callback_value(message, response, &callback_value_uvb_light);
+		case FID_SET_UVB_LIGHT_CALLBACK_CONFIGURATION: return set_callback_value_callback_configuration(message, &callback_value_uvb_light);
+		case FID_GET_UVB_LIGHT_CALLBACK_CONFIGURATION: return get_callback_value_callback_configuration(message, response, &callback_value_uvb_light);
 		default: return HANDLE_MESSAGE_RESPONSE_NOT_SUPPORTED;
 	}
 }
 
-bool handle_uv_type_a_callback(void) {
-	return handle_callback_value_callback(&callback_value_uv_type_a, FID_CALLBACK_UV_TYPE_A);
+bool handle_uva_light_callback(void) {
+	return handle_callback_value_callback(&callback_value_uva_light, FID_CALLBACK_UVA_LIGHT);
 }
 
-bool handle_uv_type_b_callback(void) {
-	return handle_callback_value_callback(&callback_value_uv_type_b, FID_CALLBACK_UV_TYPE_B);
+bool handle_uvb_light_callback(void) {
+	return handle_callback_value_callback(&callback_value_uvb_light, FID_CALLBACK_UVB_LIGHT);
 }
 
 void communication_tick(void) {
@@ -55,9 +55,8 @@ void communication_tick(void) {
 }
 
 void communication_init(void) {
-	// TODO: Add proper functions
-	callback_value_init(&callback_value_uv_type_a, veml6075_get_uv_type_a);
-	callback_value_init(&callback_value_uv_type_b, veml6075_get_uv_type_b);
+	callback_value_init(&callback_value_uvb_light, veml6075_get_uvb_light);
+	callback_value_init(&callback_value_uva_light, veml6075_get_uva_light);
 
 	communication_callback_init();
 }
