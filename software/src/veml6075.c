@@ -67,9 +67,6 @@ void veml6075_init(void) {
 	veml6075.i2c_fifo_buf[0] = (VEML6075_CONF_MSK_DEFAULT | VEML6075_CONF_MSK_SD_PD);
 	veml6075.i2c_fifo_buf[1] = 0;
 
-	// Drain FIFO
-	i2c_fifo_read_fifo(&veml6075.i2c_fifo, &veml6075.i2c_fifo_buf[0], 16);
-
 	i2c_fifo_write_register(&veml6075.i2c_fifo,
 	                        (uint8_t)VEML6075_ADDR_UV_CONF,
 	                        2,
@@ -107,8 +104,9 @@ void veml6075_tick(void) {
 				veml6075.i2c_fifo_buf[0] = (VEML6075_CONF_MSK_DEFAULT | VEML6075_CONF_MSK_SD_PU);
 				veml6075.i2c_fifo_buf[1] = 0;
 
-				// Drain FIFO
-				i2c_fifo_read_fifo(&veml6075.i2c_fifo, &veml6075.i2c_fifo_buf[0], 16);
+				// Flush FIFO
+				XMC_USIC_CH_RXFIFO_Flush(veml6075.i2c_fifo.i2c);
+				XMC_USIC_CH_TXFIFO_Flush(veml6075.i2c_fifo.i2c);
 
 				i2c_fifo_write_register(&veml6075.i2c_fifo,
 										(uint8_t)VEML6075_ADDR_UV_CONF,
@@ -137,14 +135,15 @@ void veml6075_tick(void) {
 	}
 
 	if((veml6075.sm == S_GET_UV_TYPE_A) && (veml6075.i2c_fifo.state == I2C_FIFO_STATE_IDLE)) {
-		// Drain FIFO
-		i2c_fifo_read_fifo(&veml6075.i2c_fifo, &veml6075.i2c_fifo_buf[0], 16);
+		// Flush FIFO
+		XMC_USIC_CH_RXFIFO_Flush(veml6075.i2c_fifo.i2c);
+		XMC_USIC_CH_TXFIFO_Flush(veml6075.i2c_fifo.i2c);
 
 		i2c_fifo_read_register(&veml6075.i2c_fifo, (uint8_t)VEML6075_ADDR_UVA_DATA, 2);
 	}
 	else if(ifs == I2C_FIFO_STATE_READ_REGISTER_READY) {
 		// Read data from FIFO
-		i2c_fifo_read_fifo(&veml6075.i2c_fifo, &veml6075.i2c_fifo_buf[0], veml6075.i2c_fifo.expected_fifo_level);
+		i2c_fifo_read_fifo(&veml6075.i2c_fifo, &veml6075.i2c_fifo_buf[0], 2);
 
 		fifo_v = (uint32_t)((veml6075.i2c_fifo_buf[1] << 8) | veml6075.i2c_fifo_buf[0]);
 
@@ -152,8 +151,9 @@ void veml6075_tick(void) {
 			veml6075.uva_light_raw = fifo_v;
 			veml6075.sm = S_GET_UV_TYPE_B;
 
-			// Drain FIFO
-			i2c_fifo_read_fifo(&veml6075.i2c_fifo, &veml6075.i2c_fifo_buf[0], 16);
+			// Flush FIFO
+			XMC_USIC_CH_RXFIFO_Flush(veml6075.i2c_fifo.i2c);
+			XMC_USIC_CH_TXFIFO_Flush(veml6075.i2c_fifo.i2c);
 
 			i2c_fifo_read_register(&veml6075.i2c_fifo, (uint8_t)VEML6075_ADDR_UVB_DATA, 2);
 		}
@@ -161,8 +161,9 @@ void veml6075_tick(void) {
 			veml6075.uvb_light_raw = fifo_v;
 			veml6075.sm = S_GET_UV_COMP_1;
 
-			// Drain FIFO
-			i2c_fifo_read_fifo(&veml6075.i2c_fifo, &veml6075.i2c_fifo_buf[0], 16);
+			// Flush FIFO
+			XMC_USIC_CH_RXFIFO_Flush(veml6075.i2c_fifo.i2c);
+			XMC_USIC_CH_TXFIFO_Flush(veml6075.i2c_fifo.i2c);
 
 			i2c_fifo_read_register(&veml6075.i2c_fifo, (uint8_t)VEML6075_ADDR_UVCOMP1_DATA, 2);
 		}
@@ -170,8 +171,9 @@ void veml6075_tick(void) {
 			veml6075.uv_comp1_raw = fifo_v;
 			veml6075.sm = S_GET_UV_COMP_2;
 
-			// Drain FIFO
-			i2c_fifo_read_fifo(&veml6075.i2c_fifo, &veml6075.i2c_fifo_buf[0], 16);
+			// Flush FIFO
+			XMC_USIC_CH_RXFIFO_Flush(veml6075.i2c_fifo.i2c);
+			XMC_USIC_CH_TXFIFO_Flush(veml6075.i2c_fifo.i2c);
 
 			i2c_fifo_read_register(&veml6075.i2c_fifo, (uint8_t)VEML6075_ADDR_UVCOMP2_DATA, 2);
 		}
