@@ -1,5 +1,6 @@
 /* uv-light-v2-bricklet
  * Copyright (C) 2018 Ishraq Ibne Ashraf <ishraq@tinkerforge.com>
+ * Copyright (C) 2018 Matthias Bolte <matthias@tinkerforge.com>
  *
  * communication.h: TFP protocol message handling
  *
@@ -59,26 +60,32 @@ void communication_init(void);
 #define UV_LIGHT_V2_STATUS_LED_CONFIG_SHOW_STATUS 3
 
 // Function and callback IDs and structs
-#define FID_GET_UVA_LIGHT 1
-#define FID_SET_UVA_LIGHT_CALLBACK_CONFIGURATION 2
-#define FID_GET_UVA_LIGHT_CALLBACK_CONFIGURATION 3
-#define FID_GET_UVB_LIGHT 5
-#define FID_SET_UVB_LIGHT_CALLBACK_CONFIGURATION 6
-#define FID_GET_UVB_LIGHT_CALLBACK_CONFIGURATION 7
+#define FID_GET_UVA 1
+#define FID_SET_UVA_CALLBACK_CONFIGURATION 2
+#define FID_GET_UVA_CALLBACK_CONFIGURATION 3
+#define FID_GET_UVB 5
+#define FID_SET_UVB_CALLBACK_CONFIGURATION 6
+#define FID_GET_UVB_CALLBACK_CONFIGURATION 7
+#define FID_GET_UVI 9
+#define FID_SET_UVI_CALLBACK_CONFIGURATION 10
+#define FID_GET_UVI_CALLBACK_CONFIGURATION 11
 
-#define FID_CALLBACK_UVA_LIGHT 4
-#define FID_CALLBACK_UVB_LIGHT 8
+#define FID_CALLBACK_UVA 4
+#define FID_CALLBACK_UVB 8
+#define FID_CALLBACK_UVI 12
 
 // Function prototypes
 
 // Callbacks
-bool handle_uva_light_callback(void);
-bool handle_uvb_light_callback(void);
+bool handle_uva_callback(void);
+bool handle_uvb_callback(void);
+bool handle_uvi_callback(void);
 
 #define COMMUNICATION_CALLBACK_TICK_WAIT_MS 1
-#define COMMUNICATION_CALLBACK_HANDLER_NUM 2
+#define COMMUNICATION_CALLBACK_HANDLER_NUM 3
 #define COMMUNICATION_CALLBACK_LIST_INIT \
-	handle_uva_light_callback, \
-	handle_uvb_light_callback, \
+	handle_uva_callback, \
+	handle_uvb_callback, \
+	handle_uvi_callback, \
 
 #endif

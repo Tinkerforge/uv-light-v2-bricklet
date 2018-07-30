@@ -1,5 +1,6 @@
 /* uv-light-v2-bricklet
  * Copyright (C) 2018 Ishraq Ibne Ashraf <ishraq@tinkerforge.com>
+ * Copyright (C) 2018 Matthias Bolte <matthias@tinkerforge.com>
  *
  * veml6075.c: VEML6075 driver
  *
@@ -35,10 +36,11 @@ void veml6075_init(void) {
 
 	veml6075.uv_comp1_raw = 0;
 	veml6075.uv_comp2_raw = 0;
-	veml6075.uva_light_raw = 0;
-	veml6075.uvb_light_raw = 0;
-	veml6075.uva_light_calc = 0;
-	veml6075.uvb_light_calc = 0;
+	veml6075.uva_raw = 0;
+	veml6075.uvb_raw = 0;
+	veml6075.uva_calc = 0;
+	veml6075.uvb_calc = 0;
+	veml6075.uvi_calc = 0;
 
 	veml6075.i2c_fifo.baudrate = VEML6075_I2C_BAUDRATE;
 	veml6075.i2c_fifo.i2c = VEML6075_I2C;
@@ -79,11 +81,7 @@ void veml6075_init(void) {
 }
 
 void veml6075_tick(void) {
-	uint32_t a = 0;
-	uint32_t b = 0;
-	uint32_t c = 0;
-	uint32_t d = 0;
-	uint32_t fifo_v = 0;
+	uint32_t fifo_value = 0;
 
 	I2CFifoState ifs = i2c_fifo_next_state(&veml6075.i2c_fifo);
 
@@ -143,12 +141,12 @@ void veml6075_tick(void) {
 	}
 	else if(ifs == I2C_FIFO_STATE_READ_REGISTER_READY) {
 		// Read data from FIFO
-		i2c_fifo_read_fifo(&veml6075.i2c_fifo, &veml6075.i2c_fifo_buf[0], 2);
+		i2c_fifo_read_fifo(&veml6075.i2c_fifo, veml6075.i2c_fifo_buf, 2);
 
-		fifo_v = (uint32_t)((veml6075.i2c_fifo_buf[1] << 8) | veml6075.i2c_fifo_buf[0]);
+		fifo_value = (uint32_t)(veml6075.i2c_fifo_buf[1] << 8) | veml6075.i2c_fifo_buf[0];
 
 		if(veml6075.sm == S_GET_UV_TYPE_A) {
-			veml6075.uva_light_raw = fifo_v;
+			veml6075.uva_raw = fifo_value;
 			veml6075.sm = S_GET_UV_TYPE_B;
 
 			// Flush FIFO
@@ -158,7 +156,7 @@ void veml6075_tick(void) {
 			i2c_fifo_read_register(&veml6075.i2c_fifo, (uint8_t)VEML6075_ADDR_UVB_DATA, 2);
 		}
 		else if(veml6075.sm == S_GET_UV_TYPE_B) {
-			veml6075.uvb_light_raw = fifo_v;
+			veml6075.uvb_raw = fifo_value;
 			veml6075.sm = S_GET_UV_COMP_1;
 
 			// Flush FIFO
@@ -168,7 +166,7 @@ void veml6075_tick(void) {
 			i2c_fifo_read_register(&veml6075.i2c_fifo, (uint8_t)VEML6075_ADDR_UVCOMP1_DATA, 2);
 		}
 		else if(veml6075.sm == S_GET_UV_COMP_1) {
-			veml6075.uv_comp1_raw = fifo_v;
+			veml6075.uv_comp1_raw = fifo_value;
 			veml6075.sm = S_GET_UV_COMP_2;
 
 			// Flush FIFO
@@ -178,21 +176,26 @@ void veml6075_tick(void) {
 			i2c_fifo_read_register(&veml6075.i2c_fifo, (uint8_t)VEML6075_ADDR_UVCOMP2_DATA, 2);
 		}
 		else if(veml6075.sm == S_GET_UV_COMP_2) {
-			veml6075.uv_comp2_raw = fifo_v;
+			veml6075.uv_comp2_raw = fifo_value;
 
-			// Calculate coefficients. Check page 10 of the application note
-			a = veml6075.uva_light_raw / veml6075.uv_comp1_raw;
-			c = veml6075.uvb_light_raw / veml6075.uv_comp1_raw;
-			b = (veml6075.uva_light_raw - (a * veml6075.uv_comp1_raw)) / veml6075.uv_comp2_raw;
-			d = (veml6075.uvb_light_raw - (c * veml6075.uv_comp1_raw)) / veml6075.uv_comp2_raw;
+			//uartbb_printf("uva %u, uvb %u, c1 %u, c2 %u\n\r",
+			//              veml6075.uva_raw, veml6075.uvb_raw,
+			//              veml6075.uv_comp1_raw, veml6075.uv_comp2_raw);
 
-			// Calculate compensated UVA and UVB light raw values. Check Eq. (1) and Eq. (2) on page 6 of the application note
-			veml6075.uva_light_raw = veml6075.uva_light_raw - (a * veml6075.uv_comp1_raw) - (b * veml6075.uv_comp2_raw);
-			veml6075.uvb_light_raw = veml6075.uvb_light_raw - (c * veml6075.uv_comp1_raw) - (d * veml6075.uv_comp2_raw);
+			// Calculate compensated UVA and UVB values. Check Eq. (1) and Eq. (2)
+			// on page 6 of the application note. The gain calibration factors are
+			// assumed to be 1. The result is in 1/100 counts
+			uint32_t uva_counts = (100 * veml6075.uva_raw - VEML6075_COEF_A * veml6075.uv_comp1_raw - VEML6075_COEF_B * veml6075.uv_comp2_raw);
+			uint32_t uvb_counts = (100 * veml6075.uvb_raw - VEML6075_COEF_C * veml6075.uv_comp1_raw - VEML6075_COEF_D * veml6075.uv_comp2_raw);
 
-			// Convert raw values to µW/cm² (for integration time of 100ms). Check the table on page 2
-			veml6075.uva_light_calc = veml6075.uva_light_raw / 2;
-			veml6075.uvb_light_calc = veml6075.uvb_light_raw / 4;
+			// Convert raw values to µW/cm² (for integration time of 50ms).
+			// Check the table on page 2.
+			// UVA: typical 0.93 counts/µW/cm²
+			// UVB: typical 2.10 counts/µW/cm²
+			veml6075.uva_calc = (uva_counts * 10) / 93; // 1/10 µW/cm²
+			veml6075.uvb_calc = (uvb_counts * 10) / 210; // 1/10 µW/cm²
+
+			veml6075.uvi_calc = ((uva_counts * 10) / VEML6075_UVA_RESP_INV + (uvb_counts * 10) / VEML6075_UVB_RESP_INV) / 2; // 1/10 UVI
 
 			veml6075.sm = S_GET_UV_TYPE_A;
 			veml6075.i2c_fifo.state = I2C_FIFO_STATE_IDLE;
@@ -200,10 +203,14 @@ void veml6075_tick(void) {
 	}
 }
 
-uint32_t veml6075_get_uva_light(void) {
-	return veml6075.uva_light_calc;
+uint32_t veml6075_get_uva(void) {
+	return veml6075.uva_calc;
 }
 
-uint32_t veml6075_get_uvb_light(void) {
-	return veml6075.uvb_light_calc;
+uint32_t veml6075_get_uvb(void) {
+	return veml6075.uvb_calc;
+}
+
+uint32_t veml6075_get_uvi(void) {
+	return veml6075.uvi_calc;
 }

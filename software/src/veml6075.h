@@ -1,5 +1,6 @@
 /* uv-light-v2-bricklet
  * Copyright (C) 2018 Ishraq Ibne Ashraf <ishraq@tinkerforge.com>
+ * Copyright (C) 2018 Matthias Bolte <matthias@tinkerforge.com>
  *
  * veml6075.h: VEML6075 driver
  *
@@ -47,7 +48,16 @@
 #define VEML6075_CONF_MSK_IT_800MS 0x40
 
 #define VEML6075_CONF_MSK_DEFAULT \
-	(VEML6075_CONF_MSK_AF_AUTO | VEML6075_CONF_MSK_TRIG_NO | VEML6075_CONF_MSK_HD_NORMAL | VEML6075_CONF_MSK_IT_100MS)
+	(VEML6075_CONF_MSK_AF_AUTO | VEML6075_CONF_MSK_TRIG_NO | VEML6075_CONF_MSK_HD_NORMAL | VEML6075_CONF_MSK_IT_50MS)
+
+// coefficients and responsiveness values taken from the table on application
+// note page 10, first row for open-air
+#define VEML6075_COEF_A 222 // 2.22 * 100
+#define VEML6075_COEF_B 133 // 1.33 * 100
+#define VEML6075_COEF_C 295 // 2.95 * 100
+#define VEML6075_COEF_D 174 // 1.74 * 100
+#define VEML6075_UVA_RESP_INV 68446 // 1 / 0.001461 * 100
+#define VEML6075_UVB_RESP_INV 38595 // 1 / 0.002591 * 100
 
 typedef enum {
 	S_SHUTDOWN = 0,
@@ -64,10 +74,11 @@ typedef struct {
 
 	uint32_t uv_comp1_raw;
 	uint32_t uv_comp2_raw;
-	uint32_t uva_light_raw;
-	uint32_t uvb_light_raw;
-	uint32_t uva_light_calc;
-	uint32_t uvb_light_calc;
+	uint32_t uva_raw;
+	uint32_t uvb_raw;
+	uint32_t uva_calc;
+	uint32_t uvb_calc;
+	uint32_t uvi_calc;
 
 	uint8_t i2c_fifo_buf[16];
 
@@ -80,7 +91,8 @@ extern VEML6075_t veml6075;
 void veml6075_init(void);
 void veml6075_tick(void);
 
-uint32_t veml6075_get_uva_light(void);
-uint32_t veml6075_get_uvb_light(void);
+uint32_t veml6075_get_uva(void);
+uint32_t veml6075_get_uvb(void);
+uint32_t veml6075_get_uvi(void);
 
 #endif
