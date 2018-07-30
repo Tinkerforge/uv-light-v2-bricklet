@@ -111,18 +111,18 @@ void veml6075_tick(void) {
 			                        &veml6075.i2c_fifo_buf[0],
 			                        true);
 
-			veml6075.sm = S_GET_UV_TYPE_A_WAIT;
+			veml6075.sm = S_GET_UVA_WAIT;
 			veml6075.timer_duration_ms = 10;
 			veml6075.timer_started_at = system_timer_get_ms();
 		}
 	}
-	else if(veml6075.sm == S_GET_UV_TYPE_A_WAIT) {
+	else if(veml6075.sm == S_GET_UVA_WAIT) {
 		if (system_timer_is_time_elapsed_ms(veml6075.timer_started_at, veml6075.timer_duration_ms)) {
 			// Flush FIFO
 			XMC_USIC_CH_RXFIFO_Flush(veml6075.i2c_fifo.i2c);
 			XMC_USIC_CH_TXFIFO_Flush(veml6075.i2c_fifo.i2c);
 
-			veml6075.sm = S_GET_UV_TYPE_A;
+			veml6075.sm = S_GET_UVA;
 			i2c_fifo_read_register(&veml6075.i2c_fifo, (uint8_t)VEML6075_ADDR_UVA_DATA, 2);
 		}
 	}
@@ -132,9 +132,9 @@ void veml6075_tick(void) {
 
 		fifo_value = (uint32_t)(veml6075.i2c_fifo_buf[1] << 8) | veml6075.i2c_fifo_buf[0];
 
-		if(veml6075.sm == S_GET_UV_TYPE_A) {
+		if(veml6075.sm == S_GET_UVA) {
 			veml6075.uva_raw = fifo_value;
-			veml6075.sm = S_GET_UV_TYPE_B;
+			veml6075.sm = S_GET_UVB;
 
 			// Flush FIFO
 			XMC_USIC_CH_RXFIFO_Flush(veml6075.i2c_fifo.i2c);
@@ -142,7 +142,7 @@ void veml6075_tick(void) {
 
 			i2c_fifo_read_register(&veml6075.i2c_fifo, (uint8_t)VEML6075_ADDR_UVB_DATA, 2);
 		}
-		else if(veml6075.sm == S_GET_UV_TYPE_B) {
+		else if(veml6075.sm == S_GET_UVB) {
 			veml6075.uvb_raw = fifo_value;
 			veml6075.sm = S_GET_UV_COMP_1;
 
@@ -181,7 +181,7 @@ void veml6075_tick(void) {
 
 			veml6075.uvi_calc = ((uva_counts * 10) / VEML6075_UVA_RESP_INV + (uvb_counts * 10) / VEML6075_UVB_RESP_INV) / 2; // 1/10 UVI
 
-			veml6075.sm = S_GET_UV_TYPE_A_WAIT;
+			veml6075.sm = S_GET_UVA_WAIT;
 			veml6075.i2c_fifo.state = I2C_FIFO_STATE_IDLE;
 			veml6075.timer_duration_ms = 10;
 			veml6075.timer_started_at = system_timer_get_ms();
