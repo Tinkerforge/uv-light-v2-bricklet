@@ -62,7 +62,7 @@
 
 typedef enum {
 	S_SHUTDOWN = 0,
-	S_POWER_UP,
+	S_GET_UV_TYPE_A_WAIT,
 	S_GET_UV_TYPE_A,
 	S_GET_UV_TYPE_B,
 	S_GET_UV_COMP_1,

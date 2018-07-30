@@ -76,7 +76,7 @@ void veml6075_init(void) {
 	                        true);
 
 	veml6075.sm = S_SHUTDOWN;
-	veml6075.timer_duration_ms = 150;
+	veml6075.timer_duration_ms = 10;
 	veml6075.timer_started_at = system_timer_get_ms();
 }
 
@@ -95,49 +95,36 @@ void veml6075_tick(void) {
 		return;
 	}
 
-	if((veml6075.sm == S_SHUTDOWN) || (veml6075.sm == S_POWER_UP)) {
-		if(veml6075.sm == S_SHUTDOWN) {
-			if(system_timer_is_time_elapsed_ms(veml6075.timer_started_at, veml6075.timer_duration_ms)) {
-				// Configure the sensor for power up
-				veml6075.i2c_fifo_buf[0] = (VEML6075_CONF_MSK_DEFAULT | VEML6075_CONF_MSK_SD_PU);
-				veml6075.i2c_fifo_buf[1] = 0;
+	if(veml6075.sm == S_SHUTDOWN) {
+		if(system_timer_is_time_elapsed_ms(veml6075.timer_started_at, veml6075.timer_duration_ms)) {
+			// Configure the sensor for power up
+			veml6075.i2c_fifo_buf[0] = VEML6075_CONF_MSK_DEFAULT | VEML6075_CONF_MSK_SD_PU;
+			veml6075.i2c_fifo_buf[1] = 0;
 
-				// Flush FIFO
-				XMC_USIC_CH_RXFIFO_Flush(veml6075.i2c_fifo.i2c);
-				XMC_USIC_CH_TXFIFO_Flush(veml6075.i2c_fifo.i2c);
+			// Flush FIFO
+			XMC_USIC_CH_RXFIFO_Flush(veml6075.i2c_fifo.i2c);
+			XMC_USIC_CH_TXFIFO_Flush(veml6075.i2c_fifo.i2c);
 
-				i2c_fifo_write_register(&veml6075.i2c_fifo,
-										(uint8_t)VEML6075_ADDR_UV_CONF,
-										2,
-										&veml6075.i2c_fifo_buf[0],
-										true);
+			i2c_fifo_write_register(&veml6075.i2c_fifo,
+			                        (uint8_t)VEML6075_ADDR_UV_CONF,
+			                        2,
+			                        &veml6075.i2c_fifo_buf[0],
+			                        true);
 
-				veml6075.sm = S_POWER_UP;
-				veml6075.timer_duration_ms = 150;
-				veml6075.timer_started_at = system_timer_get_ms();
-			}
-
-			return;
-		}
-		else if (veml6075.sm == S_POWER_UP) {
-			if(system_timer_is_time_elapsed_ms(veml6075.timer_started_at, veml6075.timer_duration_ms)) {
-				veml6075.sm = S_GET_UV_TYPE_A;
-				veml6075.i2c_fifo.state = I2C_FIFO_STATE_IDLE;
-				veml6075.timer_duration_ms = 0;
-				veml6075.timer_started_at = 0;
-			}
-			else {
-				return;
-			}
+			veml6075.sm = S_GET_UV_TYPE_A_WAIT;
+			veml6075.timer_duration_ms = 10;
+			veml6075.timer_started_at = system_timer_get_ms();
 		}
 	}
+	else if(veml6075.sm == S_GET_UV_TYPE_A_WAIT) {
+		if (system_timer_is_time_elapsed_ms(veml6075.timer_started_at, veml6075.timer_duration_ms)) {
+			// Flush FIFO
+			XMC_USIC_CH_RXFIFO_Flush(veml6075.i2c_fifo.i2c);
+			XMC_USIC_CH_TXFIFO_Flush(veml6075.i2c_fifo.i2c);
 
-	if((veml6075.sm == S_GET_UV_TYPE_A) && (veml6075.i2c_fifo.state == I2C_FIFO_STATE_IDLE)) {
-		// Flush FIFO
-		XMC_USIC_CH_RXFIFO_Flush(veml6075.i2c_fifo.i2c);
-		XMC_USIC_CH_TXFIFO_Flush(veml6075.i2c_fifo.i2c);
-
-		i2c_fifo_read_register(&veml6075.i2c_fifo, (uint8_t)VEML6075_ADDR_UVA_DATA, 2);
+			veml6075.sm = S_GET_UV_TYPE_A;
+			i2c_fifo_read_register(&veml6075.i2c_fifo, (uint8_t)VEML6075_ADDR_UVA_DATA, 2);
+		}
 	}
 	else if(ifs == I2C_FIFO_STATE_READ_REGISTER_READY) {
 		// Read data from FIFO
@@ -178,13 +165,10 @@ void veml6075_tick(void) {
 		else if(veml6075.sm == S_GET_UV_COMP_2) {
 			veml6075.uv_comp2_raw = fifo_value;
 
-			//uartbb_printf("uva %u, uvb %u, c1 %u, c2 %u\n\r",
-			//              veml6075.uva_raw, veml6075.uvb_raw,
-			//              veml6075.uv_comp1_raw, veml6075.uv_comp2_raw);
-
 			// Calculate compensated UVA and UVB values. Check Eq. (1) and Eq. (2)
 			// on page 6 of the application note. The gain calibration factors are
 			// assumed to be 1. The result is in 1/100 counts
+			// FIXME: check for underflow. counts could get negative in low UV situations
 			uint32_t uva_counts = (100 * veml6075.uva_raw - VEML6075_COEF_A * veml6075.uv_comp1_raw - VEML6075_COEF_B * veml6075.uv_comp2_raw);
 			uint32_t uvb_counts = (100 * veml6075.uvb_raw - VEML6075_COEF_C * veml6075.uv_comp1_raw - VEML6075_COEF_D * veml6075.uv_comp2_raw);
 
@@ -197,8 +181,10 @@ void veml6075_tick(void) {
 
 			veml6075.uvi_calc = ((uva_counts * 10) / VEML6075_UVA_RESP_INV + (uvb_counts * 10) / VEML6075_UVB_RESP_INV) / 2; // 1/10 UVI
 
-			veml6075.sm = S_GET_UV_TYPE_A;
+			veml6075.sm = S_GET_UV_TYPE_A_WAIT;
 			veml6075.i2c_fifo.state = I2C_FIFO_STATE_IDLE;
+			veml6075.timer_duration_ms = 10;
+			veml6075.timer_started_at = system_timer_get_ms();
 		}
 	}
 }
