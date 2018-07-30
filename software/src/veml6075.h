@@ -50,14 +50,15 @@
 #define VEML6075_CONF_MSK_DEFAULT \
 	(VEML6075_CONF_MSK_AF_AUTO | VEML6075_CONF_MSK_TRIG_NO | VEML6075_CONF_MSK_HD_NORMAL | VEML6075_CONF_MSK_IT_50MS)
 
-// coefficients and responsiveness values taken from the table on application
-// note page 10, first row for open-air
+// coefficients and responsivity values taken from the table on application
+// note page 10, first row for open-air. the responsivity values are given for
+// 100ms integration time, multiply by 2 to get values for 50ms integration time
 #define VEML6075_COEF_A 222 // 2.22 * 100
 #define VEML6075_COEF_B 133 // 1.33 * 100
 #define VEML6075_COEF_C 295 // 2.95 * 100
 #define VEML6075_COEF_D 174 // 1.74 * 100
-#define VEML6075_UVA_RESP_INV 68446 // 1 / 0.001461 * 100
-#define VEML6075_UVB_RESP_INV 38595 // 1 / 0.002591 * 100
+#define VEML6075_UVA_RESP_INV 34223 // 1 / (0.001461 * 2) * 100
+#define VEML6075_UVB_RESP_INV 19298 // 1 / (0.002591 * 2) * 100
 
 typedef enum {
 	S_SHUTDOWN = 0,
