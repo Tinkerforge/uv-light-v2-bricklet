@@ -35,7 +35,7 @@
 
 #define I2C_FIFO_TIMEOUT 200 // In ms
 
-#define CALLBACK_VALUE_TYPE CALLBACK_VALUE_TYPE_UINT32
+#define CALLBACK_VALUE_TYPE CALLBACK_VALUE_TYPE_INT32
 
 #include "config_custom_bootloader.h"
 

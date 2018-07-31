@@ -29,6 +29,8 @@
 
 #include "configs/config_veml6075.h"
 
+// http://www.soda-pro.com/web-services/typical-years/typical-uv
+
 VEML6075_t veml6075;
 
 void veml6075_init(void) {
@@ -113,12 +115,12 @@ void veml6075_tick(void) {
 
 			veml6075.sm = S_GET_UVA_WAIT;
 
-			// wait for 1x old integration time plus 2.5x new integration times
+			// wait for 2.5x old integration time plus 2.5x new integration times
 			// to ensure that the next reading was taken with the new integration
-			// time. it's unclear why it has to be 2.5x new integration times.
-			// 1x new integration time should be enough, but tests show that it
-			// is not enough
-			veml6075.timer_duration_ms = 50 * (veml6075.it_factor + ((veml6075.it_factor_pending * 10) / 4)) + 10;
+			// time. it's unclear why it has to be 2.5x of both integration times.
+			// actually 1x integration time of both should be enough, but tests
+			// show that it is not enough
+			veml6075.timer_duration_ms = 50 * (((veml6075.it_factor + veml6075.it_factor_pending) * 10) / 4) + 10;
 			veml6075.timer_started_at = system_timer_get_ms();
 
 			veml6075.it_msk = veml6075.it_msk_pending;
@@ -175,21 +177,43 @@ void veml6075_tick(void) {
 		}
 		else if(veml6075.sm == S_GET_UV_COMP_2) {
 			veml6075.uv_comp2_raw = value;
-			// Calculate compensated UVA and UVB values. Check Eq. (1) and Eq. (2)
-			// on page 6 of the application note. The gain calibration factors are
-			// assumed to be 1. The result is in 1/100 counts
-			// FIXME: check for underflow. counts could get negative in low UV situations
-			uint32_t uva_counts = (100 * veml6075.uva_raw - VEML6075_COEF_A * veml6075.uv_comp1_raw - VEML6075_COEF_B * veml6075.uv_comp2_raw);
-			uint32_t uvb_counts = (100 * veml6075.uvb_raw - VEML6075_COEF_C * veml6075.uv_comp1_raw - VEML6075_COEF_D * veml6075.uv_comp2_raw);
 
-			// Convert raw values to µW/cm² (for integration time of 50ms).
-			// Check the table on page 2.
-			// UVA: typical 0.93 counts/µW/cm²
-			// UVB: typical 2.10 counts/µW/cm²
-			veml6075.uva_calc = (uva_counts * 10) / (93 * veml6075.it_factor); // 1/10 µW/cm²
-			veml6075.uvb_calc = (uvb_counts * 10) / (210 * veml6075.it_factor); // 1/10 µW/cm²
+			if (veml6075.uva_raw == UINT16_MAX || veml6075.uvb_raw == UINT16_MAX ||
+			    veml6075.uv_comp1_raw == UINT16_MAX || veml6075.uv_comp2_raw == UINT16_MAX) {
+				// sensor is saturated
+				veml6075.uva_calc = -1;
+				veml6075.uvb_calc = -1;
+				veml6075.uvi_calc = -1;
+			}
+			else {
+				// Calculate compensated UVA and UVB values. Check Eq. (1) and Eq. (2)
+				// on page 6 of the application note. The gain calibration factors are
+				// assumed to be 1. The result is in 1/100 counts
+				int32_t uva_counts = 100 * (int32_t)veml6075.uva_raw - VEML6075_COEF_A * (int32_t)veml6075.uv_comp1_raw - VEML6075_COEF_B * (int32_t)veml6075.uv_comp2_raw;
+				int32_t uvb_counts = 100 * (int32_t)veml6075.uvb_raw - VEML6075_COEF_C * (int32_t)veml6075.uv_comp1_raw - VEML6075_COEF_D * (int32_t)veml6075.uv_comp2_raw;
 
-			veml6075.uvi_calc = ((uva_counts * 10) / VEML6075_UVA_RESP_INV + (uvb_counts * 10) / VEML6075_UVB_RESP_INV) / (2 * veml6075.it_factor); // 1/10 UVI
+				// check for underflow. counts can get negative in low UV situations
+				if (uva_counts < 0) {
+					uva_counts = 0;
+				}
+
+				if (uvb_counts < 0) {
+					uvb_counts = 0;
+				}
+
+				//uartbb_printf("uva %u, uvb %u, c1 %u, c2 %u, Ca %d, Cb %d\n\r", veml6075.uva_raw, veml6075.uvb_raw, veml6075.uv_comp1_raw, veml6075.uv_comp2_raw, uva_counts, uvb_counts);
+
+				// Convert raw values to µW/cm² (for integration time of 50ms).
+				// Check the table on page 2.
+				// UVA: typical 0.93 counts/µW/cm²
+				// UVB: typical 2.10 counts/µW/cm²
+				veml6075.uva_calc = (uva_counts * 100) / (93 * veml6075.it_factor); // 1/100 µW/cm² = 1/10 mW/m²
+				veml6075.uvb_calc = (uvb_counts * 100) / (210 * veml6075.it_factor); // 1/100 µW/cm² = 1/10 mW/m²
+
+				// Calculate UVI value. Check Eq. (3, 4) and Eq. (5)
+				// on page 6 of the application note.
+				veml6075.uvi_calc = ((uva_counts * 10) / VEML6075_UVA_RESP_INV + (uvb_counts * 10) / VEML6075_UVB_RESP_INV) / (2 * veml6075.it_factor); // 1/10 UVI
+			}
 
 			veml6075.i2c_fifo.state = I2C_FIFO_STATE_IDLE;
 
@@ -224,14 +248,14 @@ uint8_t veml6075_get_integration_time(void) {
 	return veml6075.it_msk_pending;
 }
 
-uint32_t veml6075_get_uva(void) {
+int32_t veml6075_get_uva(void) {
 	return veml6075.uva_calc;
 }
 
-uint32_t veml6075_get_uvb(void) {
+int32_t veml6075_get_uvb(void) {
 	return veml6075.uvb_calc;
 }
 
-uint32_t veml6075_get_uvi(void) {
+int32_t veml6075_get_uvi(void) {
 	return veml6075.uvi_calc;
 }

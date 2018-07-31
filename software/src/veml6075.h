@@ -79,13 +79,13 @@ typedef struct {
 	SMVEML6075_t sm;
 	I2CFifo i2c_fifo;
 
-	uint32_t uv_comp1_raw;
-	uint32_t uv_comp2_raw;
-	uint32_t uva_raw;
-	uint32_t uvb_raw;
-	uint32_t uva_calc;
-	uint32_t uvb_calc;
-	uint32_t uvi_calc;
+	uint16_t uv_comp1_raw;
+	uint16_t uv_comp2_raw;
+	uint16_t uva_raw;
+	uint16_t uvb_raw;
+	int32_t uva_calc;
+	int32_t uvb_calc;
+	int32_t uvi_calc;
 
 	uint32_t timer_started_at;
 	uint32_t timer_duration_ms;
@@ -99,8 +99,8 @@ void veml6075_tick(void);
 void veml6075_set_integration_time(uint8_t it_msk);
 uint8_t veml6075_get_integration_time(void);
 
-uint32_t veml6075_get_uva(void);
-uint32_t veml6075_get_uvb(void);
-uint32_t veml6075_get_uvi(void);
+int32_t veml6075_get_uva(void);
+int32_t veml6075_get_uvb(void);
+int32_t veml6075_get_uvi(void);
 
 #endif
