@@ -87,8 +87,6 @@ typedef struct {
 	uint32_t uvb_calc;
 	uint32_t uvi_calc;
 
-	uint8_t i2c_fifo_buf[16];
-
 	uint32_t timer_started_at;
 	uint32_t timer_duration_ms;
 } VEML6075_t;

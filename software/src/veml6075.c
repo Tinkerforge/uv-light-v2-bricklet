@@ -74,8 +74,6 @@ void veml6075_init(void) {
 }
 
 void veml6075_tick(void) {
-	uint32_t fifo_value = 0;
-
 	I2CFifoState ifs = i2c_fifo_next_state(&veml6075.i2c_fifo);
 
 	if(ifs & I2C_FIFO_STATE_ERROR) {
@@ -90,18 +88,13 @@ void veml6075_tick(void) {
 
 	if(veml6075.sm == S_SHUTDOWN) {
 		// Shutdown the sensor for init
-		veml6075.i2c_fifo_buf[0] = VEML6075_CONF_MSK_DEFAULT | VEML6075_CONF_MSK_SD_PD | veml6075.it_msk;
-		veml6075.i2c_fifo_buf[1] = 0;
+		uint8_t data[2] = { VEML6075_CONF_MSK_DEFAULT | VEML6075_CONF_MSK_SD_PD | veml6075.it_msk, 0 };
 
 		// Flush FIFO
 		XMC_USIC_CH_RXFIFO_Flush(veml6075.i2c_fifo.i2c);
 		XMC_USIC_CH_TXFIFO_Flush(veml6075.i2c_fifo.i2c);
 
-		i2c_fifo_write_register(&veml6075.i2c_fifo,
-		                        VEML6075_ADDR_UV_CONF,
-		                        2,
-		                        &veml6075.i2c_fifo_buf[0],
-		                        true);
+		i2c_fifo_write_register(&veml6075.i2c_fifo, VEML6075_ADDR_UV_CONF, 2, data, true);
 
 		veml6075.sm = S_CONFIGURE;
 		veml6075.timer_duration_ms = 10;
@@ -110,18 +103,13 @@ void veml6075_tick(void) {
 	else if(veml6075.sm == S_CONFIGURE) {
 		if(system_timer_is_time_elapsed_ms(veml6075.timer_started_at, veml6075.timer_duration_ms)) {
 			// Configure the sensor for power up
-			veml6075.i2c_fifo_buf[0] = VEML6075_CONF_MSK_DEFAULT | VEML6075_CONF_MSK_SD_PU | veml6075.it_msk_pending;
-			veml6075.i2c_fifo_buf[1] = 0;
+			uint8_t data[2] = { VEML6075_CONF_MSK_DEFAULT | VEML6075_CONF_MSK_SD_PU | veml6075.it_msk_pending, 0 };
 
 			// Flush FIFO
 			XMC_USIC_CH_RXFIFO_Flush(veml6075.i2c_fifo.i2c);
 			XMC_USIC_CH_TXFIFO_Flush(veml6075.i2c_fifo.i2c);
 
-			i2c_fifo_write_register(&veml6075.i2c_fifo,
-			                        VEML6075_ADDR_UV_CONF,
-			                        2,
-			                        &veml6075.i2c_fifo_buf[0],
-			                        true);
+			i2c_fifo_write_register(&veml6075.i2c_fifo, VEML6075_ADDR_UV_CONF, 2, data, true);
 
 			veml6075.sm = S_GET_UVA_WAIT;
 
@@ -149,12 +137,14 @@ void veml6075_tick(void) {
 	}
 	else if(ifs == I2C_FIFO_STATE_READ_REGISTER_READY) {
 		// Read data from FIFO
-		i2c_fifo_read_fifo(&veml6075.i2c_fifo, veml6075.i2c_fifo_buf, 2);
+		uint8_t data[2];
 
-		fifo_value = (uint32_t)(veml6075.i2c_fifo_buf[1] << 8) | veml6075.i2c_fifo_buf[0];
+		i2c_fifo_read_fifo(&veml6075.i2c_fifo, data, 2);
+
+		uint16_t value = (uint16_t)(data[1] << 8) | data[0];
 
 		if(veml6075.sm == S_GET_UVA) {
-			veml6075.uva_raw = fifo_value;
+			veml6075.uva_raw = value;
 			veml6075.sm = S_GET_UVB;
 
 			// Flush FIFO
@@ -164,7 +154,7 @@ void veml6075_tick(void) {
 			i2c_fifo_read_register(&veml6075.i2c_fifo, VEML6075_ADDR_UVB_DATA, 2);
 		}
 		else if(veml6075.sm == S_GET_UVB) {
-			veml6075.uvb_raw = fifo_value;
+			veml6075.uvb_raw = value;
 			veml6075.sm = S_GET_UV_COMP_1;
 
 			// Flush FIFO
@@ -174,7 +164,7 @@ void veml6075_tick(void) {
 			i2c_fifo_read_register(&veml6075.i2c_fifo, VEML6075_ADDR_UVCOMP1_DATA, 2);
 		}
 		else if(veml6075.sm == S_GET_UV_COMP_1) {
-			veml6075.uv_comp1_raw = fifo_value;
+			veml6075.uv_comp1_raw = value;
 			veml6075.sm = S_GET_UV_COMP_2;
 
 			// Flush FIFO
@@ -184,7 +174,7 @@ void veml6075_tick(void) {
 			i2c_fifo_read_register(&veml6075.i2c_fifo, VEML6075_ADDR_UVCOMP2_DATA, 2);
 		}
 		else if(veml6075.sm == S_GET_UV_COMP_2) {
-			veml6075.uv_comp2_raw = fifo_value;
+			veml6075.uv_comp2_raw = value;
 			// Calculate compensated UVA and UVB values. Check Eq. (1) and Eq. (2)
 			// on page 6 of the application note. The gain calibration factors are
 			// assumed to be 1. The result is in 1/100 counts
