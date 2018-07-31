@@ -48,7 +48,7 @@
 #define VEML6075_CONF_MSK_IT_800MS 0x40
 
 #define VEML6075_CONF_MSK_DEFAULT \
-	(VEML6075_CONF_MSK_AF_AUTO | VEML6075_CONF_MSK_TRIG_NO | VEML6075_CONF_MSK_HD_NORMAL | VEML6075_CONF_MSK_IT_50MS)
+	(VEML6075_CONF_MSK_AF_AUTO | VEML6075_CONF_MSK_TRIG_NO | VEML6075_CONF_MSK_HD_NORMAL)
 
 // coefficients and responsivity values taken from the table on application
 // note page 10, first row for open-air. the responsivity values are given for
@@ -62,6 +62,7 @@
 
 typedef enum {
 	S_SHUTDOWN = 0,
+	S_CONFIGURE,
 	S_GET_UVA_WAIT,
 	S_GET_UVA,
 	S_GET_UVB,
@@ -70,6 +71,11 @@ typedef enum {
 } SMVEML6075_t;
 
 typedef struct {
+	uint8_t it_msk_pending;
+	uint32_t it_factor_pending;
+	uint8_t it_msk;
+	uint32_t it_factor;
+
 	SMVEML6075_t sm;
 	I2CFifo i2c_fifo;
 
@@ -91,6 +97,9 @@ extern VEML6075_t veml6075;
 
 void veml6075_init(void);
 void veml6075_tick(void);
+
+void veml6075_set_integration_time(uint8_t it_msk);
+uint8_t veml6075_get_integration_time(void);
 
 uint32_t veml6075_get_uva(void);
 uint32_t veml6075_get_uvb(void);

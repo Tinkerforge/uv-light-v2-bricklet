@@ -41,6 +41,12 @@ void communication_init(void);
 #define UV_LIGHT_V2_THRESHOLD_OPTION_SMALLER '<'
 #define UV_LIGHT_V2_THRESHOLD_OPTION_GREATER '>'
 
+#define UV_LIGHT_V2_INTEGRATION_TIME_50MS 0
+#define UV_LIGHT_V2_INTEGRATION_TIME_100MS 1
+#define UV_LIGHT_V2_INTEGRATION_TIME_200MS 2
+#define UV_LIGHT_V2_INTEGRATION_TIME_400MS 3
+#define UV_LIGHT_V2_INTEGRATION_TIME_800MS 4
+
 #define UV_LIGHT_V2_BOOTLOADER_MODE_BOOTLOADER 0
 #define UV_LIGHT_V2_BOOTLOADER_MODE_FIRMWARE 1
 #define UV_LIGHT_V2_BOOTLOADER_MODE_BOOTLOADER_WAIT_FOR_REBOOT 2
@@ -69,12 +75,31 @@ void communication_init(void);
 #define FID_GET_UVI 9
 #define FID_SET_UVI_CALLBACK_CONFIGURATION 10
 #define FID_GET_UVI_CALLBACK_CONFIGURATION 11
+#define FID_SET_CONFIGURATION 13
+#define FID_GET_CONFIGURATION 14
 
 #define FID_CALLBACK_UVA 4
 #define FID_CALLBACK_UVB 8
 #define FID_CALLBACK_UVI 12
 
+typedef struct {
+	TFPMessageHeader header;
+	uint8_t integration_time;
+} __attribute__((__packed__)) SetConfiguration;
+
+typedef struct {
+	TFPMessageHeader header;
+} __attribute__((__packed__)) GetConfiguration;
+
+typedef struct {
+	TFPMessageHeader header;
+	uint8_t integration_time;
+} __attribute__((__packed__)) GetConfiguration_Response;
+
+
 // Function prototypes
+BootloaderHandleMessageResponse set_configuration(const SetConfiguration *data);
+BootloaderHandleMessageResponse get_configuration(const GetConfiguration *data, GetConfiguration_Response *response);
 
 // Callbacks
 bool handle_uva_callback(void);

@@ -34,6 +34,11 @@ VEML6075_t veml6075;
 void veml6075_init(void) {
 	logd("[+] veml6075_init()\n\r");
 
+	veml6075.it_msk_pending = VEML6075_CONF_MSK_IT_400MS;
+	veml6075.it_factor_pending = 8;
+	veml6075.it_msk = VEML6075_CONF_MSK_IT_400MS;
+	veml6075.it_factor = 8;
+
 	veml6075.uv_comp1_raw = 0;
 	veml6075.uv_comp2_raw = 0;
 	veml6075.uva_raw = 0;
@@ -65,19 +70,7 @@ void veml6075_init(void) {
 	// Set slave address
 	veml6075.i2c_fifo.address = VEML6075_I2C_ADDRESS;
 
-	// Shutdown the sensor for init
-	veml6075.i2c_fifo_buf[0] = (VEML6075_CONF_MSK_DEFAULT | VEML6075_CONF_MSK_SD_PD);
-	veml6075.i2c_fifo_buf[1] = 0;
-
-	i2c_fifo_write_register(&veml6075.i2c_fifo,
-	                        (uint8_t)VEML6075_ADDR_UV_CONF,
-	                        2,
-	                        &veml6075.i2c_fifo_buf[0],
-	                        true);
-
 	veml6075.sm = S_SHUTDOWN;
-	veml6075.timer_duration_ms = 10;
-	veml6075.timer_started_at = system_timer_get_ms();
 }
 
 void veml6075_tick(void) {
@@ -96,9 +89,28 @@ void veml6075_tick(void) {
 	}
 
 	if(veml6075.sm == S_SHUTDOWN) {
+		// Shutdown the sensor for init
+		veml6075.i2c_fifo_buf[0] = VEML6075_CONF_MSK_DEFAULT | VEML6075_CONF_MSK_SD_PD | veml6075.it_msk;
+		veml6075.i2c_fifo_buf[1] = 0;
+
+		// Flush FIFO
+		XMC_USIC_CH_RXFIFO_Flush(veml6075.i2c_fifo.i2c);
+		XMC_USIC_CH_TXFIFO_Flush(veml6075.i2c_fifo.i2c);
+
+		i2c_fifo_write_register(&veml6075.i2c_fifo,
+		                        VEML6075_ADDR_UV_CONF,
+		                        2,
+		                        &veml6075.i2c_fifo_buf[0],
+		                        true);
+
+		veml6075.sm = S_CONFIGURE;
+		veml6075.timer_duration_ms = 10;
+		veml6075.timer_started_at = system_timer_get_ms();
+	}
+	else if(veml6075.sm == S_CONFIGURE) {
 		if(system_timer_is_time_elapsed_ms(veml6075.timer_started_at, veml6075.timer_duration_ms)) {
 			// Configure the sensor for power up
-			veml6075.i2c_fifo_buf[0] = VEML6075_CONF_MSK_DEFAULT | VEML6075_CONF_MSK_SD_PU;
+			veml6075.i2c_fifo_buf[0] = VEML6075_CONF_MSK_DEFAULT | VEML6075_CONF_MSK_SD_PU | veml6075.it_msk_pending;
 			veml6075.i2c_fifo_buf[1] = 0;
 
 			// Flush FIFO
@@ -106,14 +118,23 @@ void veml6075_tick(void) {
 			XMC_USIC_CH_TXFIFO_Flush(veml6075.i2c_fifo.i2c);
 
 			i2c_fifo_write_register(&veml6075.i2c_fifo,
-			                        (uint8_t)VEML6075_ADDR_UV_CONF,
+			                        VEML6075_ADDR_UV_CONF,
 			                        2,
 			                        &veml6075.i2c_fifo_buf[0],
 			                        true);
 
 			veml6075.sm = S_GET_UVA_WAIT;
-			veml6075.timer_duration_ms = 10;
+
+			// wait for 1x old integration time plus 2.5x new integration times
+			// to ensure that the next reading was taken with the new integration
+			// time. it's unclear why it has to be 2.5x new integration times.
+			// 1x new integration time should be enough, but tests show that it
+			// is not enough
+			veml6075.timer_duration_ms = 50 * (veml6075.it_factor + ((veml6075.it_factor_pending * 10) / 4)) + 10;
 			veml6075.timer_started_at = system_timer_get_ms();
+
+			veml6075.it_msk = veml6075.it_msk_pending;
+			veml6075.it_factor = veml6075.it_factor_pending;
 		}
 	}
 	else if(veml6075.sm == S_GET_UVA_WAIT) {
@@ -123,7 +144,7 @@ void veml6075_tick(void) {
 			XMC_USIC_CH_TXFIFO_Flush(veml6075.i2c_fifo.i2c);
 
 			veml6075.sm = S_GET_UVA;
-			i2c_fifo_read_register(&veml6075.i2c_fifo, (uint8_t)VEML6075_ADDR_UVA_DATA, 2);
+			i2c_fifo_read_register(&veml6075.i2c_fifo, VEML6075_ADDR_UVA_DATA, 2);
 		}
 	}
 	else if(ifs == I2C_FIFO_STATE_READ_REGISTER_READY) {
@@ -140,7 +161,7 @@ void veml6075_tick(void) {
 			XMC_USIC_CH_RXFIFO_Flush(veml6075.i2c_fifo.i2c);
 			XMC_USIC_CH_TXFIFO_Flush(veml6075.i2c_fifo.i2c);
 
-			i2c_fifo_read_register(&veml6075.i2c_fifo, (uint8_t)VEML6075_ADDR_UVB_DATA, 2);
+			i2c_fifo_read_register(&veml6075.i2c_fifo, VEML6075_ADDR_UVB_DATA, 2);
 		}
 		else if(veml6075.sm == S_GET_UVB) {
 			veml6075.uvb_raw = fifo_value;
@@ -150,7 +171,7 @@ void veml6075_tick(void) {
 			XMC_USIC_CH_RXFIFO_Flush(veml6075.i2c_fifo.i2c);
 			XMC_USIC_CH_TXFIFO_Flush(veml6075.i2c_fifo.i2c);
 
-			i2c_fifo_read_register(&veml6075.i2c_fifo, (uint8_t)VEML6075_ADDR_UVCOMP1_DATA, 2);
+			i2c_fifo_read_register(&veml6075.i2c_fifo, VEML6075_ADDR_UVCOMP1_DATA, 2);
 		}
 		else if(veml6075.sm == S_GET_UV_COMP_1) {
 			veml6075.uv_comp1_raw = fifo_value;
@@ -160,11 +181,10 @@ void veml6075_tick(void) {
 			XMC_USIC_CH_RXFIFO_Flush(veml6075.i2c_fifo.i2c);
 			XMC_USIC_CH_TXFIFO_Flush(veml6075.i2c_fifo.i2c);
 
-			i2c_fifo_read_register(&veml6075.i2c_fifo, (uint8_t)VEML6075_ADDR_UVCOMP2_DATA, 2);
+			i2c_fifo_read_register(&veml6075.i2c_fifo, VEML6075_ADDR_UVCOMP2_DATA, 2);
 		}
 		else if(veml6075.sm == S_GET_UV_COMP_2) {
 			veml6075.uv_comp2_raw = fifo_value;
-
 			// Calculate compensated UVA and UVB values. Check Eq. (1) and Eq. (2)
 			// on page 6 of the application note. The gain calibration factors are
 			// assumed to be 1. The result is in 1/100 counts
@@ -176,17 +196,42 @@ void veml6075_tick(void) {
 			// Check the table on page 2.
 			// UVA: typical 0.93 counts/µW/cm²
 			// UVB: typical 2.10 counts/µW/cm²
-			veml6075.uva_calc = (uva_counts * 10) / 93; // 1/10 µW/cm²
-			veml6075.uvb_calc = (uvb_counts * 10) / 210; // 1/10 µW/cm²
+			veml6075.uva_calc = (uva_counts * 10) / (93 * veml6075.it_factor); // 1/10 µW/cm²
+			veml6075.uvb_calc = (uvb_counts * 10) / (210 * veml6075.it_factor); // 1/10 µW/cm²
 
-			veml6075.uvi_calc = ((uva_counts * 10) / VEML6075_UVA_RESP_INV + (uvb_counts * 10) / VEML6075_UVB_RESP_INV) / 2; // 1/10 UVI
+			veml6075.uvi_calc = ((uva_counts * 10) / VEML6075_UVA_RESP_INV + (uvb_counts * 10) / VEML6075_UVB_RESP_INV) / (2 * veml6075.it_factor); // 1/10 UVI
 
-			veml6075.sm = S_GET_UVA_WAIT;
 			veml6075.i2c_fifo.state = I2C_FIFO_STATE_IDLE;
-			veml6075.timer_duration_ms = 10;
-			veml6075.timer_started_at = system_timer_get_ms();
+
+			if (veml6075.it_msk_pending != veml6075.it_msk) {
+				veml6075.sm = S_CONFIGURE;
+				veml6075.timer_duration_ms = 0;
+				veml6075.timer_started_at = system_timer_get_ms();
+			}
+			else {
+				veml6075.sm = S_GET_UVA_WAIT;
+				veml6075.timer_duration_ms = 10;
+				veml6075.timer_started_at = system_timer_get_ms();
+			}
 		}
 	}
+}
+
+void veml6075_set_integration_time(uint8_t it_msk) {
+	veml6075.it_msk_pending = it_msk;
+
+	switch (it_msk) {
+	case VEML6075_CONF_MSK_IT_50MS:  veml6075.it_factor_pending = 1;  break;
+	case VEML6075_CONF_MSK_IT_100MS: veml6075.it_factor_pending = 2;  break;
+	case VEML6075_CONF_MSK_IT_200MS: veml6075.it_factor_pending = 4;  break;
+	case VEML6075_CONF_MSK_IT_400MS: veml6075.it_factor_pending = 8;  break;
+	default:
+	case VEML6075_CONF_MSK_IT_800MS: veml6075.it_factor_pending = 16; break;
+	}
+}
+
+uint8_t veml6075_get_integration_time(void) {
+	return veml6075.it_msk_pending;
 }
 
 uint32_t veml6075_get_uva(void) {

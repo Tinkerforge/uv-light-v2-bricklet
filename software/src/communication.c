@@ -43,8 +43,27 @@ BootloaderHandleMessageResponse handle_message(const void *message, void *respon
 		case FID_GET_UVI: return get_callback_value_uint32_t(message, response, &callback_value_uvi);
 		case FID_SET_UVI_CALLBACK_CONFIGURATION: return set_callback_value_callback_configuration_uint32_t(message, &callback_value_uvi);
 		case FID_GET_UVI_CALLBACK_CONFIGURATION: return get_callback_value_callback_configuration_uint32_t(message, response, &callback_value_uvi);
+		case FID_SET_CONFIGURATION: return set_configuration(message);
+		case FID_GET_CONFIGURATION: return get_configuration(message, response);
 		default: return HANDLE_MESSAGE_RESPONSE_NOT_SUPPORTED;
 	}
+}
+
+BootloaderHandleMessageResponse set_configuration(const SetConfiguration *data) {
+	if (data->integration_time > UV_LIGHT_V2_INTEGRATION_TIME_800MS) {
+		return HANDLE_MESSAGE_RESPONSE_INVALID_PARAMETER;
+	}
+
+	veml6075_set_integration_time(data->integration_time << 4);
+
+	return HANDLE_MESSAGE_RESPONSE_EMPTY;
+}
+
+BootloaderHandleMessageResponse get_configuration(const GetConfiguration *data, GetConfiguration_Response *response) {
+	response->header.length = sizeof(GetConfiguration_Response);
+	response->integration_time = veml6075_get_integration_time() >> 4;
+
+	return HANDLE_MESSAGE_RESPONSE_NEW_MESSAGE;
 }
 
 bool handle_uva_callback(void) {
