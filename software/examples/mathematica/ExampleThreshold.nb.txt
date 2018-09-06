@@ -1,0 +1,32 @@
+Needs["NETLink`"]
+LoadNETAssembly["Tinkerforge",NotebookDirectory[]<>"../../.."]
+
+host="localhost"
+port=4223
+uid="XYZ"(*Change XYZ to the UID of your UV Light Bricklet 2.0*)
+
+(*Create IPConnection and device object*)
+ipcon=NETNew["Tinkerforge.IPConnection"]
+uvl=NETNew["Tinkerforge.BrickletUVLightV2",uid,ipcon]
+ipcon@Connect[host,port]
+
+(*Callback function for UV index callback*)
+UVICB[sender_,uvi_]:=
+ Module[{},
+  Print["UV Index: "<>ToString[N[uvi/10.0]]];
+  Print["UV index > 3. Use sunscreen!"]
+ ]
+
+AddEventHandler[uvl@UVICallback,UVICB]
+
+(*Configure threshold for UV index "greater than 3"*)
+(*with a debounce period of 1s (1000ms)*)
+option=Tinkerforge`BrickletUVLightV2`THRESHOLDUOPTIONUGREATER
+uvl@SetUVICallbackConfiguration[1000,False,option,3*10,0]
+
+Input["Click OK to exit"]
+
+(*Clean up*)
+ipcon@Disconnect[]
+ReleaseNETObject[uvl]
+ReleaseNETObject[ipcon]

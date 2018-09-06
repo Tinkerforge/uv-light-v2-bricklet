@@ -1,0 +1,43 @@
+Notebook[{
+ Cell[
+  BoxData[{
+   RowBox[{"Needs", "[", "\"\<NETLink`\>\"", "]"}],
+   RowBox[{"LoadNETAssembly", "[", RowBox[{"\"\<Tinkerforge\>\"", ",", RowBox[{RowBox[{"NotebookDirectory", "[", "]"}], "<>", "\"\<../../..\>\""}]}], "]"}]
+  }], "Input"
+ ],
+ Cell[
+  BoxData[{
+   RowBox[{"host", "=", "\"\<localhost\>\""}],
+   RowBox[{"port", "=", "4223"}],
+   RowBox[{"uid", "=", "\"\<XYZ\>\"", RowBox[{"(*", "Change XYZ to the UID of your UV Light Bricklet 2.0", "*)"}]}],
+   RowBox[{"
+"}],
+   RowBox[{"(*", "Create IPConnection and device object", "*)"}],
+   RowBox[{"ipcon", "=", RowBox[{"NETNew", "[", "\"\<Tinkerforge.IPConnection\>\"", "]"}]}],
+   RowBox[{"uvl", "=", RowBox[{"NETNew", "[", RowBox[{"\"\<Tinkerforge.BrickletUVLightV2\>\"", ",", "uid", ",", "ipcon"}], "]"}]}],
+   RowBox[{"ipcon", "@", RowBox[{"Connect", "[", RowBox[{"host", ",", "port"}], "]"}]}],
+   RowBox[{"
+"}],
+   RowBox[{"(*", "Callback function for UV index callback", "*)"}],
+   RowBox[{RowBox[{"UVICB", "[", RowBox[{"sender_", ",", "uvi_"}], "]"}], ":=", "\[IndentingNewLine]", RowBox[{"Module", "[", RowBox[{RowBox[{"{", "}"}], ",", RowBox[{"\[IndentingNewLine]", RowBox[{"Print", "[", RowBox[{"\"\<UV Index: \>\"", "<>", RowBox[{"ToString", "[", RowBox[{"N", "[", RowBox[{"uvi", "/", "10.0"}], "]"}], "]"}]}], "]"}], ";", "\[IndentingNewLine]", RowBox[{"Print", "[", "\"\<UV index > 3. Use sunscreen!\>\"", "]"}], "\[IndentingNewLine]"}]}], "]"}]}],
+   RowBox[{"
+"}],
+   RowBox[{"AddEventHandler", "[", RowBox[{RowBox[{"uvl", "@", "UVICallback"}], ",", "UVICB"}], "]"}],
+   RowBox[{"
+"}],
+   RowBox[{"(*", "Configure threshold for UV index ", "\"\<greater than 3\>\"", "", "*)"}],
+   RowBox[{"(*", "with a debounce period of 1s (1000ms)", "*)"}],
+   RowBox[{"option", "=", "Tinkerforge`BrickletUVLightV2`THRESHOLDUOPTIONUGREATER"}],
+   RowBox[{"uvl", "@", RowBox[{"SetUVICallbackConfiguration", "[", RowBox[{"1000", ",", "False", ",", "option", ",", RowBox[{"3", "*", "10"}], ",", "0"}], "]"}]}],
+   RowBox[{"
+"}],
+   RowBox[{"Input", "[", "\"\<Click OK to exit\>\"", "]"}],
+   RowBox[{"
+"}],
+   RowBox[{"(*", "Clean up", "*)"}],
+   RowBox[{"ipcon", "@", RowBox[{"Disconnect", "[", "]"}]}],
+   RowBox[{"ReleaseNETObject", "[", "uvl", "]"}],
+   RowBox[{"ReleaseNETObject", "[", "ipcon", "]"}]
+  }], "Input"
+ ]
+}]

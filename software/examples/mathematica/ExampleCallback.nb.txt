@@ -1,0 +1,27 @@
+Needs["NETLink`"]
+LoadNETAssembly["Tinkerforge",NotebookDirectory[]<>"../../.."]
+
+host="localhost"
+port=4223
+uid="XYZ"(*Change XYZ to the UID of your UV Light Bricklet 2.0*)
+
+(*Create IPConnection and device object*)
+ipcon=NETNew["Tinkerforge.IPConnection"]
+uvl=NETNew["Tinkerforge.BrickletUVLightV2",uid,ipcon]
+ipcon@Connect[host,port]
+
+(*Callback function for UV index callback*)
+UVICB[sender_,uvi_]:=
+ Print["UV Index: "<>ToString[N[uvi/10.0]]]
+AddEventHandler[uvl@UVICallback,UVICB]
+
+(*Set period for UVI callback to 1s (1000ms) without a threshold*)
+option=Tinkerforge`BrickletUVLightV2`THRESHOLDUOPTIONUOFF
+uvl@SetUVICallbackConfiguration[1000,False,option,0,0]
+
+Input["Click OK to exit"]
+
+(*Clean up*)
+ipcon@Disconnect[]
+ReleaseNETObject[uvl]
+ReleaseNETObject[ipcon]
