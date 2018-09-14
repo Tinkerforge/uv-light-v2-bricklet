@@ -22,7 +22,7 @@ Module ExampleThreshold
         ' Register UV index callback to subroutine UVICB
         AddHandler uvl.UVICallback, AddressOf UVICB
 
-        ' Configure threshold for uvi "greater than 3"
+        ' Configure threshold for UV index "greater than 3"
         ' with a debounce period of 1s (1000ms)
         uvl.SetUVICallbackConfiguration(1000, False, ">"C, 3*10, 0)
 

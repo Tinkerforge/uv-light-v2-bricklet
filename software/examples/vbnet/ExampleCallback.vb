@@ -21,7 +21,7 @@ Module ExampleCallback
         ' Register UV index callback to subroutine UVICB
         AddHandler uvl.UVICallback, AddressOf UVICB
 
-        ' Set period for uvi callback to 1s (1000ms) without a threshold
+        ' Set period for UVI callback to 1s (1000ms) without a threshold
         uvl.SetUVICallbackConfiguration(1000, False, "x"C, 0, 0)
 
         Console.WriteLine("Press key to exit")
