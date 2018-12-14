@@ -19,7 +19,7 @@ func main() {
 	// Don't use device before ipcon is connected.
 
 	uvl.RegisterUVICallback(func(uvi int32) {
-		fmt.Printf("UV Index: %d\n", float64(uvi)/10.0)
+		fmt.Printf("UV Index: %f\n", float64(uvi)/10.0)
 		fmt.Println("UV index > 3. Use sunscreen!")
 	})
 
