@@ -1,0 +1,14 @@
+
+
+# Change XYZ to the UID of your UV Light Bricklet 2.0
+
+setup:
+	# Get current UV-A
+	subscribe to tinkerforge/response/uv_light_v2/XYZ/get_uva
+	publish '' to tinkerforge/request/uv_light_v2_bricklet/XYZ/get_uva 
+	# Get current UV-B
+	subscribe to tinkerforge/response/uv_light_v2/XYZ/get_uvb
+	publish '' to tinkerforge/request/uv_light_v2_bricklet/XYZ/get_uvb 
+	# Get current UV index
+	subscribe to tinkerforge/response/uv_light_v2/XYZ/get_uvi
+	publish '' to tinkerforge/request/uv_light_v2_bricklet/XYZ/get_uvi 

@@ -1,0 +1,10 @@
+
+
+# Change XYZ to the UID of your UV Light Bricklet 2.0
+
+setup:
+	# Handle incoming UV index callbacks
+	subscribe to tinkerforge/callback/uv_light_v2_bricklet/XYZ/uvi
+	publish '{"register": true}' to tinkerforge/register/uv_light_v2_bricklet/XYZ/uvi # Register uvi callback
+	# Set period for UVI callback to 1s (1000ms) without a threshold
+	publish '{"period": 1000, "value_has_to_change": false, "option": "off", "min_uvi": 0, "max_uvi": 0}' to tinkerforge/request/uv_light_v2_bricklet/XYZ/set_uvi_callback_configuration  
