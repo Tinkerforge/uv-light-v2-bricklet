@@ -33,7 +33,7 @@ int main(void) {
 	// Register UV index callback to function cb_uvi
 	uv_light_v2_register_callback(&uvl,
 	                              UV_LIGHT_V2_CALLBACK_UVI,
-	                              (void *)cb_uvi,
+	                              (void (*)(void))cb_uvi,
 	                              NULL);
 
 	// Set period for UVI callback to 1s (1000ms) without a threshold
