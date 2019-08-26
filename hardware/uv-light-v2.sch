@@ -1,35 +1,6 @@
-EESchema Schematic File Version 2
-LIBS:tinkerforge
-LIBS:power
-LIBS:device
-LIBS:transistors
-LIBS:conn
-LIBS:linear
-LIBS:regul
-LIBS:74xx
-LIBS:cmos4000
-LIBS:adc-dac
-LIBS:memory
-LIBS:xilinx
-LIBS:microcontrollers
-LIBS:dsp
-LIBS:microchip
-LIBS:analog_switches
-LIBS:motorola
-LIBS:texas
-LIBS:intel
-LIBS:audio
-LIBS:interface
-LIBS:digital-audio
-LIBS:philips
-LIBS:display
-LIBS:cypress
-LIBS:siliconi
-LIBS:opto
-LIBS:atmel
-LIBS:contrib
-LIBS:valves
-EELAYER 25 0
+EESchema Schematic File Version 4
+LIBS:uv-light-v2-cache
+EELAYER 26 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
@@ -46,7 +17,7 @@ $EndDescr
 Text Notes 600  7650 0    40   ~ 0
 Copyright Tinkerforge GmbH 2018.\nThis documentation describes Open Hardware and is licensed under the\nCERN OHL v. 1.1.\nYou may redistribute and modify this documentation under the terms of the\nCERN OHL v.1.1. (http://ohwr.org/cernohl). This documentation is distributed\nWITHOUT ANY EXPRESS OR IMPLIED WARRANTY, INCLUDING OF\nMERCHANTABILITY, SATISFACTORY QUALITY AND FITNESS FOR A\nPARTICULAR PURPOSE. Please see the CERN OHL v.1.1 for applicable\nconditions\n
 $Comp
-L C C2
+L uv-light-v2-rescue:C C2
 U 1 1 4CE147C5
 P 1850 1250
 F 0 "C2" V 1800 1100 50  0000 L CNN
@@ -57,7 +28,7 @@ F 3 "" H 1850 1250 60  0001 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L DRILL U4
+L uv-light-v2-rescue:DRILL U4
 U 1 1 4C692B9B
 P 10600 6350
 F 0 "U4" H 10650 6400 60  0001 C CNN
@@ -68,7 +39,7 @@ F 3 "" H 10600 6350 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L DRILL U3
+L uv-light-v2-rescue:DRILL U3
 U 1 1 4C692B9A
 P 10600 6150
 F 0 "U3" H 10650 6200 60  0001 C CNN
@@ -79,7 +50,7 @@ F 3 "" H 10600 6150 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L DRILL U5
+L uv-light-v2-rescue:DRILL U5
 U 1 1 4C692B98
 P 10900 6150
 F 0 "U5" H 10950 6200 60  0001 C CNN
@@ -90,7 +61,7 @@ F 3 "" H 10900 6150 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L DRILL U6
+L uv-light-v2-rescue:DRILL U6
 U 1 1 4C692B94
 P 10900 6350
 F 0 "U6" H 10950 6400 60  0001 C CNN
@@ -105,7 +76,7 @@ SDA
 Text GLabel 4450 2950 0    47   Output ~ 0
 SCL
 $Comp
-L VCC #PWR01
+L uv-light-v2-rescue:VCC #PWR01
 U 1 1 4C5FCFB4
 P 2350 950
 F 0 "#PWR01" H 2350 1050 30  0001 C CNN
@@ -116,7 +87,7 @@ F 3 "" H 2350 950 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR02
+L uv-light-v2-rescue:GND #PWR02
 U 1 1 4C5FCF5E
 P 1150 2600
 F 0 "#PWR02" H 1150 2600 30  0001 C CNN
@@ -127,7 +98,7 @@ F 3 "" H 1150 2600 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L CON-SENSOR2 P1
+L uv-light-v2-rescue:CON-SENSOR2 P1
 U 1 1 4C5FCF27
 P 1150 1800
 F 0 "P1" H 1250 2200 60  0000 C CNN
@@ -138,7 +109,7 @@ F 3 "" H 1150 1800 60  0001 C CNN
 	-1   0    0    -1  
 $EndComp
 $Comp
-L GND #PWR03
+L uv-light-v2-rescue:GND #PWR03
 U 1 1 551D44C3
 P 9100 3750
 F 0 "#PWR03" H 9100 3750 30  0001 C CNN
@@ -149,7 +120,7 @@ F 3 "" H 9100 3750 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L C C5
+L uv-light-v2-rescue:C C5
 U 1 1 551D450D
 P 9450 3150
 F 0 "C5" V 9300 3150 50  0000 L CNN
@@ -160,7 +131,7 @@ F 3 "" H 9450 3150 60  0001 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L VCC #PWR04
+L uv-light-v2-rescue:VCC #PWR04
 U 1 1 551D479C
 P 8450 2550
 F 0 "#PWR04" H 8450 2650 30  0001 C CNN
@@ -171,7 +142,7 @@ F 3 "" H 8450 2550 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L R_PACK4 RP2
+L uv-light-v2-rescue:R_PACK4 RP2
 U 1 1 55BA021C
 P 8250 2850
 F 0 "RP2" H 8250 3300 40  0000 C CNN
@@ -183,7 +154,7 @@ F 3 "" H 8250 2850 60  0000 C CNN
 $EndComp
 NoConn ~ 8400 3050
 $Comp
-L GND #PWR05
+L uv-light-v2-rescue:GND #PWR05
 U 1 1 55DCAB0B
 P 9450 3750
 F 0 "#PWR05" H 9450 3750 30  0001 C CNN
@@ -194,7 +165,7 @@ F 3 "" H 9450 3750 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L VCC #PWR06
+L uv-light-v2-rescue:VCC #PWR06
 U 1 1 55DCAC7F
 P 9800 2850
 F 0 "#PWR06" H 9800 2950 30  0001 C CNN
@@ -205,13 +176,13 @@ F 3 "" H 9800 2850 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	7950 3200 8700 3200
+	7950 3200 8600 3200
 Wire Wire Line
-	7950 3300 8700 3300
+	7950 3300 8300 3300
 Wire Wire Line
 	8500 2650 8500 2600
 Wire Wire Line
-	8300 2600 8600 2600
+	8300 2600 8400 2600
 Wire Wire Line
 	8400 2600 8400 2650
 Wire Wire Line
@@ -236,7 +207,7 @@ Wire Wire Line
 	8300 3050 8300 3300
 Connection ~ 8300 3300
 $Comp
-L VEML6075 U2
+L uv-light-v2-rescue:VEML6075 U2
 U 1 1 55DCA3A5
 P 8600 3750
 F 0 "U2" H 8850 4400 60  0000 C CNN
@@ -250,44 +221,44 @@ Wire Wire Line
 	8600 3200 8600 3050
 Connection ~ 8600 3200
 $Comp
-L XMC1XXX24 U1
+L uv-light-v2-rescue:XMC1XXX24 U1
 U 1 1 5A86AD72
 P 5000 6900
 F 0 "U1" H 4850 7300 60  0000 C CNN
-F 1 "XMC11XX24" H 5000 6500 60  0000 C CNN
+F 1 "XMC1100" H 5000 6500 60  0000 C CNN
 F 2 "kicad-libraries:QFN24-4x4mm-0.5mm" H 5150 7650 60  0001 C CNN
 F 3 "" H 5150 7650 60  0000 C CNN
 	1    5000 6900
 	1    0    0    -1  
 $EndComp
 $Comp
-L XMC1XXX24 U1
+L uv-light-v2-rescue:XMC1XXX24 U1
 U 2 1 5A86ADDE
 P 5000 3000
 F 0 "U1" H 4850 3550 60  0000 C CNN
-F 1 "XMC11XX24" H 5000 2450 60  0000 C CNN
+F 1 "XMC1100" H 5000 2450 60  0000 C CNN
 F 2 "kicad-libraries:QFN24-4x4mm-0.5mm" H 5150 3750 60  0001 C CNN
 F 3 "" H 5150 3750 60  0000 C CNN
 	2    5000 3000
 	1    0    0    -1  
 $EndComp
 $Comp
-L XMC1XXX24 U1
+L uv-light-v2-rescue:XMC1XXX24 U1
 U 3 1 5A86AE40
 P 5000 4400
 F 0 "U1" H 4850 4650 60  0000 C CNN
-F 1 "XMC11XX24" H 5000 4150 60  0000 C CNN
+F 1 "XMC1100" H 5000 4150 60  0000 C CNN
 F 2 "kicad-libraries:QFN24-4x4mm-0.5mm" H 5150 5150 60  0001 C CNN
 F 3 "" H 5150 5150 60  0000 C CNN
 	3    5000 4400
 	1    0    0    -1  
 $EndComp
 $Comp
-L XMC1XXX24 U1
+L uv-light-v2-rescue:XMC1XXX24 U1
 U 4 1 5A86AEA7
 P 5000 5550
 F 0 "U1" H 4850 6000 60  0000 C CNN
-F 1 "XMC11XX24" H 5000 5100 60  0000 C CNN
+F 1 "XMC1100" H 5000 5100 60  0000 C CNN
 F 2 "kicad-libraries:QFN24-4x4mm-0.5mm" H 5150 6300 60  0001 C CNN
 F 3 "" H 5150 6300 60  0000 C CNN
 	4    5000 5550
@@ -298,7 +269,7 @@ SDA
 Text GLabel 7950 3300 0    47   Output ~ 0
 SCL
 $Comp
-L C C3
+L uv-light-v2-rescue:C C3
 U 1 1 5A86D5B8
 P 2350 1250
 F 0 "C3" V 2300 1100 50  0000 L CNN
@@ -309,7 +280,7 @@ F 3 "" H 2350 1250 60  0001 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L GND #PWR07
+L uv-light-v2-rescue:GND #PWR07
 U 1 1 5A86DD27
 P 1800 2600
 F 0 "#PWR07" H 1800 2600 30  0001 C CNN
@@ -320,7 +291,7 @@ F 3 "" H 1800 2600 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L C C1
+L uv-light-v2-rescue:C C1
 U 1 1 5A86DE6A
 P 1800 2350
 F 0 "C1" V 1750 2200 50  0000 L CNN
@@ -331,7 +302,7 @@ F 3 "" H 1800 2350 60  0001 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L R_PACK4 RP1
+L uv-light-v2-rescue:R_PACK4 RP1
 U 1 1 5A86E25A
 P 2200 2150
 F 0 "RP1" H 2200 2600 50  0000 C CNN
@@ -342,7 +313,7 @@ F 3 "" H 2200 2150 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR08
+L uv-light-v2-rescue:GND #PWR08
 U 1 1 5A86E522
 P 2350 1650
 F 0 "#PWR08" H 2350 1650 30  0001 C CNN
@@ -353,11 +324,11 @@ F 3 "" H 2350 1650 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	1500 1600 2350 1600
+	1500 1600 1850 1600
 Wire Wire Line
 	1850 1600 1850 1450
 Wire Wire Line
-	2350 1450 2350 1650
+	2350 1450 2350 1600
 Connection ~ 1850 1600
 Connection ~ 2350 1600
 Wire Wire Line
@@ -365,9 +336,9 @@ Wire Wire Line
 Wire Wire Line
 	1650 1700 1650 1000
 Wire Wire Line
-	1650 1000 2350 1000
+	1650 1000 1850 1000
 Wire Wire Line
-	2350 950  2350 1050
+	2350 950  2350 1000
 Wire Wire Line
 	1850 1050 1850 1000
 Connection ~ 1850 1000
@@ -379,7 +350,7 @@ Wire Wire Line
 Wire Wire Line
 	1500 2000 2000 2000
 Wire Wire Line
-	2000 2100 1500 2100
+	2000 2100 1800 2100
 Wire Wire Line
 	1800 2100 1800 2150
 Connection ~ 1800 2100
@@ -404,7 +375,7 @@ Wire Wire Line
 Wire Wire Line
 	2400 2100 2650 2100
 $Comp
-L C C4
+L uv-light-v2-rescue:C C4
 U 1 1 5A86FAE4
 P 4500 6850
 F 0 "C4" V 4450 6700 50  0000 L CNN
@@ -415,7 +386,7 @@ F 3 "" H 4500 6850 60  0001 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L GND #PWR09
+L uv-light-v2-rescue:GND #PWR09
 U 1 1 5A8700B2
 P 4500 7250
 F 0 "#PWR09" H 4500 7250 30  0001 C CNN
@@ -426,7 +397,7 @@ F 3 "" H 4500 7250 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L VCC #PWR010
+L uv-light-v2-rescue:VCC #PWR010
 U 1 1 5A8703ED
 P 4500 6550
 F 0 "#PWR010" H 4500 6650 30  0001 C CNN
@@ -439,10 +410,10 @@ $EndComp
 Wire Wire Line
 	4650 6600 4500 6600
 Wire Wire Line
-	4500 6550 4500 6650
+	4500 6550 4500 6600
 Connection ~ 4500 6600
 Wire Wire Line
-	4500 7050 4500 7250
+	4500 7050 4500 7100
 Wire Wire Line
 	4650 7100 4500 7100
 Connection ~ 4500 7100
@@ -474,7 +445,7 @@ Wire Wire Line
 Wire Wire Line
 	4650 2550 4200 2550
 $Comp
-L CONN_01X01 P2
+L uv-light-v2-rescue:CONN_01X01 P2
 U 1 1 5A873A4D
 P 4000 2550
 F 0 "P2" H 4000 2650 50  0000 C CNN
@@ -492,7 +463,7 @@ NoConn ~ 4650 4350
 NoConn ~ 4650 4450
 NoConn ~ 4650 4550
 $Comp
-L CONN_01X02 P3
+L uv-light-v2-rescue:CONN_01X02 P3
 U 1 1 5A873FA1
 P 4200 5550
 F 0 "P3" H 4200 5700 50  0000 C CNN
@@ -503,7 +474,7 @@ F 3 "" H 4200 5550 50  0000 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L GND #PWR011
+L uv-light-v2-rescue:GND #PWR011
 U 1 1 5A874356
 P 4450 5650
 F 0 "#PWR011" H 4450 5650 30  0001 C CNN
@@ -514,7 +485,7 @@ F 3 "" H 4450 5650 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L R R1
+L uv-light-v2-rescue:R R1
 U 1 1 5A874621
 P 4200 5800
 F 0 "R1" V 4200 5700 50  0000 C CNN
@@ -525,7 +496,7 @@ F 3 "" H 4200 5800 60  0000 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L LED D1
+L uv-light-v2-rescue:LED D1
 U 1 1 5A874952
 P 3650 5800
 F 0 "D1" H 3650 5900 50  0000 C CNN
@@ -536,7 +507,7 @@ F 3 "" H 3650 5800 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L VCC #PWR012
+L uv-light-v2-rescue:VCC #PWR012
 U 1 1 5A874AB5
 P 3400 5750
 F 0 "#PWR012" H 3400 5850 30  0001 C CNN
@@ -573,5 +544,33 @@ Wire Wire Line
 	4650 2850 4450 2850
 NoConn ~ 8500 3050
 Wire Wire Line
-	9100 2950 9800 2950
+	9100 2950 9450 2950
+Wire Wire Line
+	8450 2600 8500 2600
+Wire Wire Line
+	8500 2600 8600 2600
+Wire Wire Line
+	8400 2600 8450 2600
+Wire Wire Line
+	9450 2950 9800 2950
+Wire Wire Line
+	8300 3300 8700 3300
+Wire Wire Line
+	8600 3200 8700 3200
+Wire Wire Line
+	1850 1600 2350 1600
+Wire Wire Line
+	2350 1600 2350 1650
+Wire Wire Line
+	1850 1000 2350 1000
+Wire Wire Line
+	2350 1000 2350 1050
+Wire Wire Line
+	1800 2100 1500 2100
+Wire Wire Line
+	4500 6600 4500 6650
+Wire Wire Line
+	4500 7100 4500 7200
+Wire Wire Line
+	4500 7200 4500 7250
 $EndSCHEMATC
