@@ -27,5 +27,5 @@ if __name__ == "__main__":
     # with a debounce period of 1s (1000ms)
     uvl.set_uvi_callback_configuration(1000, False, ">", 3*10, 0)
 
-    raw_input("Press key to exit\n") # Use input() in Python 3
+    input("Press key to exit\n") # Use raw_input() in Python 2
     ipcon.disconnect()
