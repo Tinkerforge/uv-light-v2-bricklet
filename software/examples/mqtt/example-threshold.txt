@@ -4,7 +4,7 @@ setup:
 	# Handle incoming UV index callbacks
 	subscribe to tinkerforge/callback/uv_light_v2_bricklet/XYZ/uvi
 	publish '{"register": true}' to tinkerforge/register/uv_light_v2_bricklet/XYZ/uvi # Register uvi callback
-	
+
 	# Configure threshold for UV index "greater than 3"
 	# with a debounce period of 1s (1000ms)
 	publish '{"period": 1000, "value_has_to_change": false, "option": "greater", "min": 30, "max": 0}' to tinkerforge/request/uv_light_v2_bricklet/XYZ/set_uvi_callback_configuration
