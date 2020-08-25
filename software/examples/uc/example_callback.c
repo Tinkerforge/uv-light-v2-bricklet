@@ -1,5 +1,3 @@
-
-
 #include "bindings/hal_common.h"
 #include "bindings/bricklet_uv_light_v2.h"
 
@@ -7,15 +5,12 @@
 
 void check(int rc, const char* msg);
 
-
-
 // Callback function for UV index callback
 void uvi_handler(TF_UVLightV2 *device, int32_t uvi, void *user_data) {
 	(void)device; (void)user_data; // avoid unused parameter warning
 
 	tf_hal_printf("UV Index: %d 1/%d\n", uvi, 10.0);
 }
-
 
 TF_UVLightV2 uvl;
 
