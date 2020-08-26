@@ -11,7 +11,6 @@ void example_setup(TF_HalContext *hal) {
 	// Create device object
 	check(tf_uv_light_v2_create(&uvl, UID, hal), "create device object");
 
-
 	// Get current UV-A
 	int32_t uva;
 	check(tf_uv_light_v2_get_uva(&uvl, &uva), "get UV-A");
@@ -29,7 +28,6 @@ void example_setup(TF_HalContext *hal) {
 	check(tf_uv_light_v2_get_uvi(&uvl, &uvi), "get UV index");
 
 	tf_hal_printf("UV Index: %d 1/%d\n", uvi, 10.0);
-
 }
 
 void example_loop(TF_HalContext *hal) {
