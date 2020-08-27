@@ -5,15 +5,19 @@
 
 void check(int rc, const char* msg);
 
+void example_setup(TF_HalContext *hal);
+void example_loop(TF_HalContext *hal);
+
+
 // Callback function for UV index callback
-void uvi_handler(TF_UVLightV2 *device, int32_t uvi, void *user_data) {
+static void uvi_handler(TF_UVLightV2 *device, int32_t uvi, void *user_data) {
 	(void)device; (void)user_data; // avoid unused parameter warning
 
 	tf_hal_printf("UV Index: %d 1/%d\n", uvi, 10.0);
 	tf_hal_printf("UV index > 3. Use sunscreen!\n");
 }
 
-TF_UVLightV2 uvl;
+static TF_UVLightV2 uvl;
 
 void example_setup(TF_HalContext *hal) {
 	// Create device object
