@@ -23,19 +23,19 @@ void example_setup(TF_HalContext *hal) {
 	int32_t uva;
 	check(tf_uv_light_v2_get_uva(&uvl, &uva), "get UV-A");
 
-	tf_hal_printf("UV-A: %d 1/%d mW/m²\n", uva, 10.0);
+	tf_hal_printf("UV-A: %d 1/%d mW/m²\n", uva, 10);
 
 	// Get current UV-B
 	int32_t uvb;
 	check(tf_uv_light_v2_get_uvb(&uvl, &uvb), "get UV-B");
 
-	tf_hal_printf("UV-B: %d 1/%d mW/m²\n", uvb, 10.0);
+	tf_hal_printf("UV-B: %d 1/%d mW/m²\n", uvb, 10);
 
 	// Get current UV index
 	int32_t uvi;
 	check(tf_uv_light_v2_get_uvi(&uvl, &uvi), "get UV index");
 
-	tf_hal_printf("UV Index: %d 1/%d\n", uvi, 10.0);
+	tf_hal_printf("UV Index: %d 1/%d\n", uvi, 10);
 }
 
 void example_loop(TF_HalContext *hal) {
