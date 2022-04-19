@@ -9,8 +9,8 @@
 
 void check(int rc, const char* msg);
 
-void example_setup(TF_HalContext *hal);
-void example_loop(TF_HalContext *hal);
+void example_setup(TF_HAL *hal);
+void example_loop(TF_HAL *hal);
 
 
 // Callback function for UV index callback
@@ -22,7 +22,7 @@ static void uvi_handler(TF_UVLightV2 *device, int32_t uvi, void *user_data) {
 
 static TF_UVLightV2 uvl;
 
-void example_setup(TF_HalContext *hal) {
+void example_setup(TF_HAL *hal) {
 	// Create device object
 	check(tf_uv_light_v2_create(&uvl, UID, hal), "create device object");
 
@@ -35,7 +35,7 @@ void example_setup(TF_HalContext *hal) {
 	tf_uv_light_v2_set_uvi_callback_configuration(&uvl, 1000, false, 'x', 0, 0);
 }
 
-void example_loop(TF_HalContext *hal) {
+void example_loop(TF_HAL *hal) {
 	// Poll for callbacks
 	tf_hal_callback_tick(hal, 0);
 }

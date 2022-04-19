@@ -9,13 +9,13 @@
 
 void check(int rc, const char* msg);
 
-void example_setup(TF_HalContext *hal);
-void example_loop(TF_HalContext *hal);
+void example_setup(TF_HAL *hal);
+void example_loop(TF_HAL *hal);
 
 
 static TF_UVLightV2 uvl;
 
-void example_setup(TF_HalContext *hal) {
+void example_setup(TF_HAL *hal) {
 	// Create device object
 	check(tf_uv_light_v2_create(&uvl, UID, hal), "create device object");
 
@@ -38,7 +38,7 @@ void example_setup(TF_HalContext *hal) {
 	tf_hal_printf("UV Index: %d 1/%d\n", uvi, 10);
 }
 
-void example_loop(TF_HalContext *hal) {
+void example_loop(TF_HAL *hal) {
 	// Poll for callbacks
 	tf_hal_callback_tick(hal, 0);
 }
