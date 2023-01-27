@@ -6,11 +6,11 @@
 
   (title_block
     (title "UV Light Bricklet")
-    (date "2018-02-16")
+    (date "2023-01-27")
     (rev "2.0")
     (company "Tinkerforge GmbH")
     (comment 1 "Licensed under CERN OHL v.1.1")
-    (comment 2 "Copyright (©) 2018, L.Lauer <lukas@tinkerforge.com>")
+    (comment 2 "Copyright (©) 2023, T.Schneidermann <tim@tinkerforge.com>")
   )
 
   (lib_symbols
@@ -1521,7 +1521,7 @@
     (effects (font (size 0.9906 0.9906)) (justify left bottom))
     (uuid 06483e5c-63b6-4285-a856-fe912d8470c4)
   )
-  (text "Copyright Tinkerforge GmbH 2018.\nThis documentation describes Open Hardware and is licensed under the\nCERN OHL v. 1.1.\nYou may redistribute and modify this documentation under the terms of the\nCERN OHL v.1.1. (http://ohwr.org/cernohl). This documentation is distributed\nWITHOUT ANY EXPRESS OR IMPLIED WARRANTY, INCLUDING OF\nMERCHANTABILITY, SATISFACTORY QUALITY AND FITNESS FOR A\nPARTICULAR PURPOSE. Please see the CERN OHL v.1.1 for applicable\nconditions\n"
+  (text "Copyright Tinkerforge GmbH 2023.\nThis documentation describes Open Hardware and is licensed under the\nCERN OHL v. 1.1.\nYou may redistribute and modify this documentation under the terms of the\nCERN OHL v.1.1. (http://ohwr.org/cernohl). This documentation is distributed\nWITHOUT ANY EXPRESS OR IMPLIED WARRANTY, INCLUDING OF\nMERCHANTABILITY, SATISFACTORY QUALITY AND FITNESS FOR A\nPARTICULAR PURPOSE. Please see the CERN OHL v.1.1 for applicable\nconditions\n"
     (at 15.24 194.31 0)
     (effects (font (size 1.016 1.016)) (justify left bottom))
     (uuid 920a5e79-d8d7-4d9d-b975-401875a37ea8)
